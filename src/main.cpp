@@ -5,7 +5,8 @@
 int main()
 {
     printf("Hello from Main\n");
-    matrix_test1();
+    //matrix_test1();
+    run_matrix_tests();
     return 0;
 }
 
