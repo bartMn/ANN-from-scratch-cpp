@@ -20,7 +20,6 @@ void matrix_test1()
     t1.join();
     t2.join();
     Matrix test_m(666, 555);
-    test_m.test();
     std::cout << "The maxtix has " << test_m.get_rows_num() << " rows and " << test_m.get_columns_num() << " columns" << std::endl;
     //return 0;
 }
@@ -29,6 +28,27 @@ void test_constructor() {
     Matrix m(3, 5);
     assert(m.get_rows_num() == 3);
     assert(m.get_columns_num() == 5);
+
+    float arr[2][3] = {{1.0,2.0,3.0}, {4.0,5.0,6.0}};
+    Matrix m1(2, 3, *arr);
+
+    // Check dimensions
+    assert(m1.get_rows_num() == 2);
+    assert(m1.get_columns_num() == 3);
+    assert(m1.get_val(0, 0) == 1.0f);
+    assert(m1.get_val(0, 1) == 2.0f);
+    assert(m1.get_val(0, 2) == 3.0f);
+    assert(m1.get_val(1, 0) == 4.0f);
+    assert(m1.get_val(1, 1) == 5.0f);
+    assert(m1.get_val(1, 2) == 6.0f);
+
+    std::cout << "test_constructor passed.\n";
+}
+
+void test_print_matrix() {
+    float arr[2][3] = {{1.0,2.0,3.0}, {4.0,5.0,6.0}};
+    Matrix m(2, 3, *arr);
+    m.printMatrix();
     std::cout << "test_constructor passed.\n";
 }
 
@@ -44,18 +64,12 @@ void test_get_columns_num() {
     std::cout << "test_get_columns_num passed.\n";
 }
 
-void test_test_function() {
-    Matrix m(2, 3);
-    m.test();  // Should just print without crashing
-    std::cout << "test_test_function passed (no crash).\n";
-}
-
 
 int run_matrix_tests() {
     test_constructor();
     test_get_rows_num();
     test_get_columns_num();
-    test_test_function();
+    test_print_matrix();
 
     std::cout << "All tests passed!\n";
     return 0;
