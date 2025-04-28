@@ -21,11 +21,10 @@ class Matrix{
     private:
         int rows;
         int columns;
-        std::vector<std::vector<float>> matrix_vals;
+        std::vector<float> matrix_vals;
 };
 /*
     
-// Vector operators
 Matrix operator+(const Matrix& a, const Matrix& b);
 Matrix operator-(const Matrix& a, const Matrix& b);
 Matrix operator*(const Matrix& v, double scalar);
