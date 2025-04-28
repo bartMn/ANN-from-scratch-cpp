@@ -34,3 +34,83 @@ void Matrix::printMatrix(){
 int Matrix::get_rows_num(){ return this -> rows; } 
 int Matrix::get_columns_num(){ return this -> columns; }
 float Matrix::get_val(int row, int col) {return this-> matrix_vals[row * this->columns + col]; }
+
+
+Matrix& Matrix::operator+=(const Matrix& other) {
+    
+    if (rows != other.rows || columns != other.columns) {
+        throw std::runtime_error("Matrix dimensions must match for addition.");
+    }
+    
+    for (int i=0; i<rows*columns; i++) matrix_vals[i] += other.matrix_vals[i];
+    return *this;
+}
+
+Matrix& Matrix::operator-=(const Matrix& other) {
+    
+    if (rows != other.rows || columns != other.columns) {
+        throw std::runtime_error("Matrix dimensions must match for addition.");
+    }
+    
+    for (int i=0; i<rows*columns; i++) matrix_vals[i] -= other.matrix_vals[i];
+    return *this;
+}
+
+Matrix& Matrix::operator*=(double scalar) {
+
+    for (int i=0; i<rows*columns; i++) matrix_vals[i] *= scalar;
+    return *this;
+}
+
+
+Matrix& Matrix::operator/=(double scalar) {
+    if (scalar == 0) {
+        throw std::runtime_error("division by 0!");
+    }
+
+    for (int i=0; i<rows*columns; i++) matrix_vals[i] /= scalar;
+    return *this;
+}
+
+
+Matrix operator+(const Matrix& a, const Matrix& b) {
+    if (a.rows != b.rows || a.columns != b.columns) {
+        throw std::runtime_error("Matrix dimensions must match for addition.");
+    }
+    Matrix result(a.rows, a.columns);
+    for (int i=0; i<a.rows*a.columns; i++) result.matrix_vals[i] = a.matrix_vals[i] + b.matrix_vals[i];
+    
+    return result;
+}
+
+Matrix operator-(const Matrix& a, const Matrix& b) {
+    if (a.rows != b.rows || a.columns != b.columns) {
+        throw std::runtime_error("Matrix dimensions must match for addition.");
+    }
+    Matrix result(a.rows, a.columns);
+    for (int i=0; i<a.rows*a.columns; i++) result.matrix_vals[i] = a.matrix_vals[i] - b.matrix_vals[i];
+    
+    return result;
+}
+
+Matrix operator*(const Matrix& m, double scalar){
+    Matrix result(m.rows, m.columns);
+    for (int i=0; i<m.rows*m.columns; i++) result.matrix_vals[i] = m.matrix_vals[i] * scalar;
+    return result;
+}
+
+Matrix operator*(double scalar, const Matrix& m){
+    Matrix result(m.rows, m.columns);
+    for (int i=0; i<m.rows*m.columns; i++) result.matrix_vals[i] = m.matrix_vals[i] * scalar;
+    return result;
+}
+
+
+Matrix operator/(const Matrix& m, double scalar){
+    if (scalar == 0) {
+        throw std::runtime_error("division by 0!");
+    }
+    Matrix result(m.rows, m.columns);
+    for (int i=0; i<m.rows*m.columns; i++) result.matrix_vals[i] = m.matrix_vals[i] / scalar;
+    return result;
+}
