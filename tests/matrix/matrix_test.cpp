@@ -365,6 +365,50 @@ int test_elementwise_multiplication() {
     return 0;
 }
 
+int test_matrixMultiply() {
+    float arr1[2][3] = {{1, 2, 3}, {4, 5, 6}};
+    float arr2[3][2] = {{7, 8}, {9, 10}, {11, 12}};
+    Matrix m1(2, 3, *arr1);
+    Matrix m2(3, 2, *arr2);
+    Matrix result(2, 2);
+
+    result.matrixMultiply(m1, m2);
+    float expected[2][2] = {{1*7 + 2*9 + 3*11, 1*8 + 2*10 + 3*12}, {4*7 + 5*9 + 6*11, 4*8 + 5*10 + 6*12}};
+    for (int r = 0; r< result.get_rows_num(); r++){
+        for (int c = 0; c < result.get_columns_num(); c++) { //*((mat + row * c) + col)
+            if (result.get_val(r, c) != *(*expected+r*result.get_rows_num() + c)){
+                std::cout << result.get_val(r, c) << "  " << *(*expected+r*result.get_rows_num() + c)<< std::endl;
+                std::cout << "\nMatrix-matrix multiplication FAILED\n";
+                return -1;
+            }
+        }
+    }
+
+    std::cout << "test_matrixMultiply passed.\n";
+    return 0;
+}
+
+int test_elementWiseMultiply() {
+    float arr1[2][2] = {{1, 2}, {3, 4}};
+    float arr2[2][2] = {{5, 6}, {7, 8}};
+    Matrix m1(2, 2, *arr1);
+    Matrix m2(2, 2, *arr2);
+    Matrix result(2, 2);
+
+    result.elementWiseMultiply(m1, m2);
+    float expected[] = {1*5, 2*6, 3*7, 4*8};  // [[1*5, 2*6], [3*7, 4*8]]
+        for (int r = 0; r< result.get_rows_num() ; r++)
+            for (int c = 0; c < result.get_columns_num() ; c++) {
+                if (result.get_val(r, c) != expected[r*result.get_rows_num() + c]){
+                    std::cout << "\nElement-wise multiplication FAILED\n";
+                    return -1;
+                }
+            }
+
+    std::cout << "test_elementWiseMultiply passed.\n";
+    return 0;
+}
+
 int run_matrix_tests() {
     int status = 0;
     if (test_constructor() != 0) status = -1;
@@ -386,6 +430,8 @@ int run_matrix_tests() {
     if (test_elementwise_multiplication() != 0) status = -1;
     if (test_invalid_multiplication() != 0) status = -1;
     if (test_invalid_elementwise_multiplication() != 0) status = -1;
+    if (test_matrixMultiply() != 0) status = -1;
+    if (test_elementWiseMultiply() != 0) status = -1;
 
     if (status == 0) {
         std::cout << "All matrix tests passed successfully!\n";
