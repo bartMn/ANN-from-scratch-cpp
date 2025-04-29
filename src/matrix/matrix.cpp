@@ -141,3 +141,32 @@ Matrix operator^(const Matrix& a, const Matrix& b){
     for (int i=0; i<a.rows*a.columns; i++) result.matrix_vals[i] = a.matrix_vals[i] * b.matrix_vals[i];
     return result;
 }
+
+void Matrix::matrixMultiply(const Matrix& a, const Matrix& b){
+    if (a.columns != b.rows) {
+        throw std::runtime_error("Invalid matrix dimensions for matrix multiplication.");
+    }
+
+    if (this-> rows != a.rows || this->columns != b.columns) {
+        throw std::runtime_error("Matrix dimensions must match target matrix.");
+    }
+
+    for (int a_row=0; a_row < a.rows; a_row++){
+        for (int b_col= 0; b_col < b.columns; b_col++){
+            this->matrix_vals[a_row * b.columns + b_col] = 0;
+            for (int k=0; k< a.columns; k++){
+                this->matrix_vals[a_row * b.columns + b_col] += a.matrix_vals[a_row * a.columns + k] * b.matrix_vals[k * b.columns + b_col];
+            }
+        }
+    }
+}
+
+void Matrix::elementWiseMultiply(const Matrix& a, const Matrix& b){
+    if (a.rows != b.rows || a.columns != b.columns) {
+        throw std::runtime_error("Matrix dimensions must match for element-wise multiplication.");
+    }
+    if (this->rows != a.rows || this->columns != a.columns){
+        throw std::runtime_error("Matrix dimensions must match target matrix.");
+    }
+    for (int i=0; i<a.rows*a.columns; i++) this->matrix_vals[i] = a.matrix_vals[i] * b.matrix_vals[i];
+}
