@@ -16,12 +16,15 @@ class Matrix{
     Matrix& operator-=(const Matrix& other);
     Matrix& operator*=(double scalar);
     Matrix& operator/=(double scalar);
+    Matrix& operator*=(const Matrix& other);
+    Matrix& operator^=(const Matrix& other);
 
     friend Matrix operator+(const Matrix& a, const Matrix& b);
     friend Matrix operator-(const Matrix& a, const Matrix& b);
     friend Matrix operator*(const Matrix& m, double scalar);
     friend Matrix operator*(double scalar, const Matrix& m);
-    //Matrix operator*(const Matrix& a, const Matrix& b);
+    friend Matrix operator*(const Matrix& a, const Matrix& b);
+    friend Matrix operator^(const Matrix& a, const Matrix& b);
     friend Matrix operator/(const Matrix& m, double scalar);
     
 
@@ -31,7 +34,4 @@ class Matrix{
         std::vector<float> matrix_vals;
 };
     
-
-
-
 #endif

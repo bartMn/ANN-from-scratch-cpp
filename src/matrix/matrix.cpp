@@ -114,3 +114,30 @@ Matrix operator/(const Matrix& m, double scalar){
     for (int i=0; i<m.rows*m.columns; i++) result.matrix_vals[i] = m.matrix_vals[i] / scalar;
     return result;
 }
+
+Matrix operator*(const Matrix& a, const Matrix& b){
+    
+    if (a.columns != b.rows) {
+        throw std::runtime_error("Invalid matrix dimensions for matrix multiplication.");
+    }
+    Matrix result(a.rows, b.columns);
+    
+    for (int a_row=0; a_row < a.rows; a_row++){
+        for (int k=0; k< a.columns; k++){
+            for (int b_col= 0; b_col < b.columns; b_col++){
+                result.matrix_vals[a_row * b.columns + b_col] += a.matrix_vals[a_row * a.columns + k] * b.matrix_vals[k * b.columns + b_col];
+            }
+        }
+    }
+    return result;
+}
+
+Matrix operator^(const Matrix& a, const Matrix& b){
+    if (a.rows != b.rows || a.columns != b.columns) {
+        throw std::runtime_error("Matrix dimensions must match for element-wise multiplication.");
+    }
+    
+    Matrix result(a.rows, a.columns);
+    for (int i=0; i<a.rows*a.columns; i++) result.matrix_vals[i] = a.matrix_vals[i] * b.matrix_vals[i];
+    return result;
+}
