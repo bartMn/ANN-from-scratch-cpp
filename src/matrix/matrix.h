@@ -11,29 +11,27 @@ class Matrix{
         void printMatrix();
         float get_val(int row, int col);
 
-    /*
+    
     Matrix& operator+=(const Matrix& other);
     Matrix& operator-=(const Matrix& other);
     Matrix& operator*=(double scalar);
     Matrix& operator/=(double scalar);
-    */
+    Matrix& operator*=(const Matrix& other);
+    Matrix& operator^=(const Matrix& other);
+
+    friend Matrix operator+(const Matrix& a, const Matrix& b);
+    friend Matrix operator-(const Matrix& a, const Matrix& b);
+    friend Matrix operator*(const Matrix& m, double scalar);
+    friend Matrix operator*(double scalar, const Matrix& m);
+    friend Matrix operator*(const Matrix& a, const Matrix& b);
+    friend Matrix operator^(const Matrix& a, const Matrix& b);
+    friend Matrix operator/(const Matrix& m, double scalar);
+    
 
     private:
         int rows;
         int columns;
-        std::vector<std::vector<float>> matrix_vals;
+        std::vector<float> matrix_vals;
 };
-/*
     
-// Vector operators
-Matrix operator+(const Matrix& a, const Matrix& b);
-Matrix operator-(const Matrix& a, const Matrix& b);
-Matrix operator*(const Matrix& v, double scalar);
-Matrix operator*(const Matrix& a, const Matrix& b);
-Matrix operator*(double scalar, const Matrix& v);
-Matrix operator/(const Matrix& v, double scalar);
-Matrix operator-(const Matrix& v);
-
-*/
-
 #endif
