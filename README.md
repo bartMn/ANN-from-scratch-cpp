@@ -24,7 +24,7 @@ This project implements a neural network library from scratch in C++ with suppor
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/ANN_from_scratch.git
+   git clone https://github.com/bartMn/ANN_from_scratch.git
    cd ANN_from_scratch
 
 2. Build the project:
