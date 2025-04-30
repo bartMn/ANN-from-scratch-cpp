@@ -11,21 +11,36 @@ int func1(int c, const std::string& m)
     return 0;
 }
 
+
+/**
+ * @brief A test function to demonstrate multithreading and matrix creation.
+ * @return 0 if the test passes.
+ */
 int matrix_test1()
 {
     std::cout << "matrix.cpp imported from src OK\n";
+
+    // Create and run threads
     std::thread t1(func1, 1, "mes1\n");
     std::thread t2(func1, 420, "mes2\n");
     
     t1.join();
     t2.join();
+
+    // Create a test matrix
     Matrix test_m(666, 555);
     std::cout << "The maxtix has " << test_m.get_rows_num() << " rows and " << test_m.get_columns_num() << " columns" << std::endl;
     return 0;
 }
 
+/**
+ * @brief Tests the matrix constructor with various inputs.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_constructor() {
     int status = 0;
+
+    // Test default constructor
     Matrix m(3, 5);
     if (m.get_rows_num() != 3) status = -1;
     if (m.get_columns_num() != 5) status = -1;
@@ -35,10 +50,11 @@ int test_constructor() {
         return -1;
     }
 
+    // Test constructor with initialization array
     float arr[2][3] = {{1.0,2.0,3.0}, {4.0,5.0,6.0}};
     Matrix m1(2, 3, *arr);
 
-    // Check dimensions
+    // Check dimensions and values
     if (m1.get_rows_num() != 2) status = -1;
     if (m1.get_columns_num() != 3) status = -1;
     if (m1.get_val(0, 0) != 1.0f) status = -1;
@@ -53,14 +69,25 @@ int test_constructor() {
     return status;
 }
 
+/**
+ * @brief Tests the printMatrix function.
+ * @return 0 if the test passes.
+ */
 int test_print_matrix() {
     float arr[2][3] = {{1.0,2.0,3.0}, {4.0,5.0,6.0}};
     Matrix m(2, 3, *arr);
+
+    // Print the matrix
     m.printMatrix();
     std::cout << "test_constructor passed.\n";
     return 0;
 }
 
+
+/**
+ * @brief Tests the get_rows_num function.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_get_rows_num() {
     Matrix m(7, 2);
     if (m.get_rows_num() != 7){
@@ -71,6 +98,11 @@ int test_get_rows_num() {
     return 0;
 }
 
+
+/**
+ * @brief Tests the get_columns_num function.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_get_columns_num() {
     Matrix m(4, 9);
     if (m.get_columns_num() != 9){
@@ -81,7 +113,10 @@ int test_get_columns_num() {
     return 0;
 }
 
-
+/**
+ * @brief Tests the operator+= for matrix addition.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_operator_plus_equals() {
     float arr1[2][2] = {{1.0, 2.0}, {3.0, 4.0}};
     float arr2[2][2] = {{5.0, 6.0}, {7.0, 8.0}};
@@ -99,6 +134,10 @@ int test_operator_plus_equals() {
     return 0;
 }
 
+/**
+ * @brief Tests the operator-= for matrix subtraction.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_operator_minus_equals() {
     float arr1[2][2] = {{5.0, 6.0}, {7.0, 8.0}};
     float arr2[2][2] = {{1.0, 2.0}, {3.0, 4.0}};
@@ -116,6 +155,10 @@ int test_operator_minus_equals() {
     return 0;
 }
 
+/**
+ * @brief Tests the operator*= for scalar multiplication.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_operator_times_equals() {
     float arr1[2][2] = {{1.0, 2.0}, {3.0, 4.0}};
     Matrix m1(2, 2, *arr1);
@@ -131,6 +174,10 @@ int test_operator_times_equals() {
     return 0;
 }
 
+/**
+ * @brief Tests the operator/= for scalar division.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_operator_divide_equals() {
     float arr1[2][2] = {{2.0, 4.0}, {6.0, 8.0}};
     Matrix m1(2, 2, *arr1);
@@ -146,6 +193,10 @@ int test_operator_divide_equals() {
     return 0;
 }
 
+/**
+ * @brief Tests the operator+= for matrix addition with invalid size.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_operator_plus_equals_invalid_size() {
     float arr1[2][2] = {{1.0, 2.0}, {3.0, 4.0}};
     float arr2[3][2] = {{5.0, 6.0}, {7.0, 8.0}, {9.0, 10.0}};
@@ -165,6 +216,10 @@ int test_operator_plus_equals_invalid_size() {
     }
 }
 
+/**
+ * @brief Tests the operator-= for matrix subtraction with invalid size.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_operator_minus_equals_invalid_size() {
     float arr1[2][2] = {{1.0, 2.0}, {3.0, 4.0}};
     float arr2[2][3] = {{5.0, 6.0, 7.0}, {8.0, 9.0, 10.0}};
@@ -184,7 +239,10 @@ int test_operator_minus_equals_invalid_size() {
     }
 }
 
-
+/**
+ * @brief Tests the operator+ for matrix addition.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_operator_plus() {
     float arr1[2][2] = {{1.0, 2.0}, {3.0, 4.0}};
     float arr2[2][2] = {{5.0, 6.0}, {7.0, 8.0}};
@@ -202,6 +260,10 @@ int test_operator_plus() {
     return 0;
 }
 
+/**
+ * @brief Tests the operator- for matrix subtraction.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_operator_minus() {
     float arr1[2][2] = {{5.0, 6.0}, {7.0, 8.0}};
     float arr2[2][2] = {{1.0, 2.0}, {3.0, 4.0}};
@@ -219,6 +281,10 @@ int test_operator_minus() {
     return 0;
 }
 
+/**
+ * @brief Tests the operator* for scalar multiplication.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_operator_scalar_multiplication() {
     float arr[2][2] = {{1.0, 2.0}, {3.0, 4.0}};
     Matrix m(2, 2, *arr);
@@ -234,6 +300,10 @@ int test_operator_scalar_multiplication() {
     return 0;
 }
 
+/**
+ * @brief Tests the operator/ for scalar division.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_operator_scalar_division() {
     float arr[2][2] = {{2.0, 4.0}, {6.0, 8.0}};
     Matrix m(2, 2, *arr);
@@ -249,6 +319,10 @@ int test_operator_scalar_division() {
     return 0;
 }
 
+/**
+ * @brief Tests the operator/ for scalar division by zero.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_operator_scalar_division_by_zero() {
     float arr[2][2] = {{2.0, 4.0}, {6.0, 8.0}};
     Matrix m(2, 2, *arr);
@@ -266,6 +340,10 @@ int test_operator_scalar_division_by_zero() {
     }
 }
 
+/**
+ * @brief Tests invalid matrix multiplication where dimensions are incompatible.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_invalid_multiplication() {
     std::cout << "\nTesting invalid matrix multiplication (should catch error)...\n";
 
@@ -286,6 +364,10 @@ int test_invalid_multiplication() {
     }
 }
 
+/**
+ * @brief Tests invalid element-wise multiplication where dimensions are incompatible.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_invalid_elementwise_multiplication() {
     std::cout << "\nTesting invalid element-wise multiplication (should catch error)...\n";
 
@@ -306,6 +388,10 @@ int test_invalid_elementwise_multiplication() {
     }
 }
 
+/**
+ * @brief Tests the matrix multiplication function.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_matrix_multiplication() {
     std::cout << "\nTesting matrix-matrix multiplication...\n";
 
@@ -336,6 +422,10 @@ int test_matrix_multiplication() {
     return 0;
 }
 
+/**
+ * @brief Tests the element-wise multiplication function.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_elementwise_multiplication() {
     std::cout << "\nTesting element-wise multiplication...\n";
 
@@ -365,6 +455,10 @@ int test_elementwise_multiplication() {
     return 0;
 }
 
+/**
+ * @brief Tests the matrix multiplication function.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_matrixMultiply() {
     float arr1[2][3] = {{1, 2, 3}, {4, 5, 6}};
     float arr2[3][2] = {{7, 8}, {9, 10}, {11, 12}};
@@ -388,6 +482,10 @@ int test_matrixMultiply() {
     return 0;
 }
 
+/**
+ * @brief Tests the element-wise multiplication function.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_elementWiseMultiply() {
     float arr1[2][2] = {{1, 2}, {3, 4}};
     float arr2[4] = {5, 6, 7, 8};
@@ -409,6 +507,10 @@ int test_elementWiseMultiply() {
     return 0;
 }
 
+/**
+ * @brief Tests the execution time of a matrix operation.
+ * @return 0 if the test passes.
+ */
 int test_exec_time(){
 
     auto start = std::chrono::high_resolution_clock::now();
@@ -436,6 +538,11 @@ int test_exec_time(){
     return 0;
 }
 
+
+/**
+ * @brief Runs all matrix-related tests.
+ * @return 0 if all tests pass, -1 otherwise.
+ */
 int run_matrix_tests() {
     int status = 0;
     if (test_constructor() != 0) status = -1;

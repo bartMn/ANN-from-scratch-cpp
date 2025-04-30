@@ -5,6 +5,10 @@
 #include "../../src/matrix/matrix.h"
 #include "functions_test.h"
 
+/**
+ * @brief Tests the ReLU activation function.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_relu() {
     float vals[] = {-3, -2, -1, 0, 1, 2, 3};
     Matrix m(1, 7, vals);
@@ -22,6 +26,10 @@ int test_relu() {
     return 0;
 }
 
+/**
+ * @brief Tests the sigmoid activation function.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_sigmoid() {
     float vals[] = {0, 1, -1, 2, -2};
     Matrix m(1, 5, vals);
@@ -39,6 +47,10 @@ int test_sigmoid() {
     return 0;
 }
 
+/**
+ * @brief Tests the softmax function.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_softmax() {
     float vals[] = {1, 2, 3};
     Matrix m(1, 3, vals);
@@ -59,6 +71,10 @@ int test_softmax() {
     return 0;
 }
 
+/**
+ * @brief Tests the hyperbolic tangent (tanh) activation function.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_tanh() {
     float vals[] = {0, 1, -1, 2, -2};
     Matrix m(1, 5, vals);
@@ -76,6 +92,10 @@ int test_tanh() {
     return 0;
 }
 
+/**
+ * @brief Tests the difference calculation between predictions and ground truth.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_diff() {
     float pred_vals[] = {1.0, 2.0, 3.0};
     float true_vals[] = {1.0, 2.5, 3.5};
@@ -98,6 +118,10 @@ int test_diff() {
     return 0;
 }
 
+/**
+ * @brief Tests the derivative of the ReLU function.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_relu_derivative() {
     float vals[] = {-1.0, 0.0, 1.0};
     Matrix m(1, 3, vals);
@@ -118,6 +142,10 @@ int test_relu_derivative() {
     return 0;
 }
 
+/**
+ * @brief Tests the derivative of the sigmoid function.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_sigmoid_derivative() {
     float vals[] = {0.5, 0.8, 0.2};
     Matrix m(1, 3, vals);
@@ -138,6 +166,10 @@ int test_sigmoid_derivative() {
     return 0;
 }
 
+/**
+ * @brief Tests the derivative of the Mean Squared Error (MSE) loss.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_mse_derivative() {
     float diff_vals[] = {0.5, -0.5, 1.0};
     Matrix diff(1, 3, diff_vals);
@@ -159,6 +191,10 @@ int test_mse_derivative() {
     return 0;
 }
 
+/**
+ * @brief Tests the derivative of the cross-entropy loss.
+ * @return 0 if the test passes, -1 otherwise.
+ */
 int test_cross_entropy_derivative() {
     float diff_vals[] = {0.5, -0.5, 1.0};
     Matrix diff(1, 3, diff_vals);
@@ -179,6 +215,10 @@ int test_cross_entropy_derivative() {
     return 0;
 }
 
+/**
+ * @brief Runs all function-related tests.
+ * @return 0 if all tests pass, -1 otherwise.
+ */
 int run_functions_tests() {
     int status = 0;
 
