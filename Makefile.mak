@@ -1,6 +1,6 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -Wall -std=c++11 -pthread -I./src
+CXXFLAGS = -Wall -std=c++11 -fopenmp -pthread -I./src
 
 # Directories
 SRCDIR = src
