@@ -2,14 +2,26 @@
 #include <cmath>
 #include <iostream>
 
+/**
+ * @brief Applies the ReLU activation function element-wise.
+ * @param m The matrix to apply ReLU on.
+ */
 void Functions::ReLu(Matrix& m){
     for (int i = 0; i < m.columns*m.rows; i++) m.matrix_vals[i] = std::max(0.0f, m.matrix_vals[i]);
 }
 
+/**
+ * @brief Applies the sigmoid activation function element-wise.
+ * @param m The matrix to apply sigmoid on.
+ */
 void Functions::sigmoid(Matrix& m){
     for (int i = 0; i < m.columns*m.rows; i++) m.matrix_vals[i] = 1.0 / (1.0 + std::exp(-m.matrix_vals[i]));
 }
 
+/**
+ * @brief Applies the softmax function to the matrix.
+ * @param m The matrix to apply softmax on.
+ */
 void Functions::softmax(Matrix& m){
     float sum_of_exp = 0.0f;
     for (int i = 0; i < m.columns*m.rows; i++){
@@ -19,10 +31,23 @@ void Functions::softmax(Matrix& m){
     m /= sum_of_exp;
 }
 
+
+/**
+ * @brief Applies the hyperbolic tangent function element-wise.
+ * @param m The matrix to apply tanh on.
+ */
 void Functions::Tanh(Matrix& m){
     for (int i = 0; i < m.columns*m.rows; i++) m.matrix_vals[i] = std::tanh(m.matrix_vals[i]);
 }
 
+
+/**
+ * @brief Computes the difference between predictions and ground truth.
+ * @param m_diff The matrix to store the difference.
+ * @param predictions The matrix of predicted values.
+ * @param y The matrix of ground truth values.
+ * @throws std::runtime_error if the dimensions of predictions and ground truth do not match.
+ */
 void Functions::diff(Matrix& m_diff, Matrix& predictions, Matrix& y){
     if (predictions.rows != y.rows || predictions.columns != y.columns) {
         throw std::runtime_error("Matrix dimensions must match for diff calculation.");
@@ -33,6 +58,14 @@ void Functions::diff(Matrix& m_diff, Matrix& predictions, Matrix& y){
     }
 }
 
+
+/**
+ * @brief Computes the Mean Squared Error (MSE) between predictions and ground truth.
+ * @param predictions The matrix of predicted values.
+ * @param y The matrix of ground truth values.
+ * @return The computed MSE value.
+ * @throws std::runtime_error if the dimensions of predictions and ground truth do not match.
+ */
 float Functions::MSE(Matrix& predictions, Matrix& y) {
     if (predictions.rows != y.rows || predictions.columns != y.columns) {
         throw std::runtime_error("Matrix dimensions must match for MSE calculation.");
@@ -47,6 +80,27 @@ float Functions::MSE(Matrix& predictions, Matrix& y) {
     return mse;
 }
 
+/**
+ * @brief Computes the Mean Squared Error (MSE) between predictions and ground truth.
+ * @param predictions The matrix of errors.
+ * @return The computed MSE value.
+ */
+ float Functions::MSE(Matrix& m_diff){
+    float mse = 0.0f;
+    for (int i = 0; i < m_diff.columns*m_diff.rows; i++) {
+        mse += m_diff.matrix_vals[i] * m_diff.matrix_vals[i];
+    }
+    mse /= (m_diff.rows * m_diff.columns);
+    return mse;
+}
+
+/**
+ * @brief Computes the cross-entropy loss between predictions and ground truth.
+ * @param predictions The matrix of predicted probabilities.
+ * @param y The matrix of ground truth values.
+ * @return The computed cross-entropy loss value.
+ * @throws std::runtime_error if the dimensions of predictions and ground truth do not match.
+ */
 float Functions::Cross_Entropy(Matrix& predictions, Matrix& y) {
     if (predictions.rows != y.rows || predictions.columns != y.columns) {
         throw std::runtime_error("Matrix dimensions must match for Cross Entropy calculation.");
@@ -62,6 +116,11 @@ float Functions::Cross_Entropy(Matrix& predictions, Matrix& y) {
     return cross_entropy;
 }
 
+/**
+ * @brief Computes the derivative of the ReLU function.
+ * @param m_derivatives The matrix to store the derivatives.
+ * @param m The matrix of input values.
+ */
 void Functions::ReLu_derivative(Matrix& m_derivatives, Matrix& m){
     for (int i = 0; i < m.columns*m.rows; i++) {
         if (m.matrix_vals[i] > 0) {
@@ -71,25 +130,33 @@ void Functions::ReLu_derivative(Matrix& m_derivatives, Matrix& m){
         }
     }
 }
+
+/**
+ * @brief Computes the derivative of the sigmoid function.
+ * @param m_derivatives The matrix to store the derivatives.
+ * @param m The matrix of input values.
+ */
 void Functions::sigmoid_derivative(Matrix& m_derivatives, Matrix& m){
     m_derivatives.elementWiseMultiply(m, 1.0 - m);
 }
 
-float Functions::MSE(Matrix& m_diff){
-    float mse = 0.0f;
-    for (int i = 0; i < m_diff.columns*m_diff.rows; i++) {
-        mse += m_diff.matrix_vals[i] * m_diff.matrix_vals[i];
-    }
-    mse /= (m_diff.rows * m_diff.columns);
-    return mse;
-}
-
+/**
+ * @brief Computes the derivative of the MSE loss.
+ * @param m_derivatives The matrix to store the derivatives.
+ * @param m_diff The matrix of differences between predictions and ground truth.
+ */
 void Functions::MSE_derivative(Matrix& m_derivatives, Matrix& m_diff){
     int N = m_diff.rows * m_diff.columns;
     for (int i = 0; i < m_diff.columns*m_diff.rows; i++) {
         m_derivatives.matrix_vals[i] = (2.0f * m_diff.matrix_vals[i]) / N;
     }
 }
+
+/**
+ * @brief Computes the derivative of the cross-entropy loss.
+ * @param m_derivatives The matrix to store the derivatives.
+ * @param m_diff The matrix of differences between predictions and ground truth.
+ */
 void Functions::Cross_Entropy_derivative(Matrix& m_derivatives, Matrix& m_diff){
     for (int i = 0; i < m_diff.columns*m_diff.rows; i++) {
         m_derivatives.matrix_vals[i] = -m_diff.matrix_vals[i];
