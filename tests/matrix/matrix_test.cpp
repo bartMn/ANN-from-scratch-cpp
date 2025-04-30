@@ -520,6 +520,7 @@ int test_exec_time(){
     for (int i = 0; i< M*N; i++) vals[i] = 1.0;
     Matrix A(M,N, vals);
     Matrix B(N,M, vals);
+    delete[] vals;
     Matrix C(M,M);
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
