@@ -35,13 +35,13 @@ This project implements a neural network library from scratch in C++ with suppor
 
 
 ### Project Structure
-ANN_from_scratch/
-├── src/
-│   ├── matrix/          # Matrix operations
-│   ├── functions/       # Activation, loss and derivative functions
-│   └── main.cpp         # Entry point of the program
-├── tests/
-│   ├── matrix/          # Unit tests for matrix operations
-│   ├── functions/       # Unit tests for functions
-├── Makefile.mak         # Build configuration
-└── README.md            # Project documentation
+ANN_from_scratch/  
+├── src/  
+│   ├── matrix/          # Matrix operations  
+│   ├── functions/       # Activation, loss and derivative functions  
+│   └── main.cpp         # Entry point of the program  
+├── tests/  
+│   ├── matrix/          # Unit tests for matrix operations  
+│   ├── functions/       # Unit tests for functions  
+├── Makefile.mak         # Build configuration  
+└── README.md            # Project documentation  
