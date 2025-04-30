@@ -42,6 +42,7 @@ Matrix& Matrix::operator+=(const Matrix& other) {
         throw std::runtime_error("Matrix dimensions must match for addition.");
     }
     
+    #pragma omp parallel for
     for (int i=0; i<rows*columns; i++) matrix_vals[i] += other.matrix_vals[i];
     return *this;
 }
@@ -52,12 +53,13 @@ Matrix& Matrix::operator-=(const Matrix& other) {
         throw std::runtime_error("Matrix dimensions must match for addition.");
     }
     
+    #pragma omp parallel for
     for (int i=0; i<rows*columns; i++) matrix_vals[i] -= other.matrix_vals[i];
     return *this;
 }
 
 Matrix& Matrix::operator*=(double scalar) {
-
+    #pragma omp parallel for
     for (int i=0; i<rows*columns; i++) matrix_vals[i] *= scalar;
     return *this;
 }
@@ -68,6 +70,7 @@ Matrix& Matrix::operator/=(double scalar) {
         throw std::runtime_error("division by 0!");
     }
 
+    #pragma omp parallel for
     for (int i=0; i<rows*columns; i++) matrix_vals[i] /= scalar;
     return *this;
 }
@@ -77,7 +80,10 @@ Matrix operator+(const Matrix& a, const Matrix& b) {
     if (a.rows != b.rows || a.columns != b.columns) {
         throw std::runtime_error("Matrix dimensions must match for addition.");
     }
+    
     Matrix result(a.rows, a.columns);
+    
+    #pragma omp parallel for
     for (int i=0; i<a.rows*a.columns; i++) result.matrix_vals[i] = a.matrix_vals[i] + b.matrix_vals[i];
     
     return result;
@@ -88,6 +94,8 @@ Matrix operator-(const Matrix& a, const Matrix& b) {
         throw std::runtime_error("Matrix dimensions must match for addition.");
     }
     Matrix result(a.rows, a.columns);
+    
+    #pragma omp parallel for
     for (int i=0; i<a.rows*a.columns; i++) result.matrix_vals[i] = a.matrix_vals[i] - b.matrix_vals[i];
     
     return result;
@@ -95,12 +103,16 @@ Matrix operator-(const Matrix& a, const Matrix& b) {
 
 Matrix operator*(const Matrix& m, double scalar){
     Matrix result(m.rows, m.columns);
+
+    #pragma omp parallel for
     for (int i=0; i<m.rows*m.columns; i++) result.matrix_vals[i] = m.matrix_vals[i] * scalar;
     return result;
 }
 
 Matrix operator*(double scalar, const Matrix& m){
     Matrix result(m.rows, m.columns);
+
+    #pragma omp parallel for
     for (int i=0; i<m.rows*m.columns; i++) result.matrix_vals[i] = m.matrix_vals[i] * scalar;
     return result;
 }
@@ -111,6 +123,8 @@ Matrix operator/(const Matrix& m, double scalar){
         throw std::runtime_error("division by 0!");
     }
     Matrix result(m.rows, m.columns);
+    
+    #pragma omp parallel for
     for (int i=0; i<m.rows*m.columns; i++) result.matrix_vals[i] = m.matrix_vals[i] / scalar;
     return result;
 }
@@ -122,6 +136,7 @@ Matrix operator*(const Matrix& a, const Matrix& b){
     }
     Matrix result(a.rows, b.columns);
     
+    #pragma omp parallel for    
     for (int a_row=0; a_row < a.rows; a_row++){
         for (int k=0; k< a.columns; k++){
             for (int b_col= 0; b_col < b.columns; b_col++){
@@ -138,6 +153,7 @@ Matrix operator^(const Matrix& a, const Matrix& b){
     }
     
     Matrix result(a.rows, a.columns);
+    #pragma omp parallel for
     for (int i=0; i<a.rows*a.columns; i++) result.matrix_vals[i] = a.matrix_vals[i] * b.matrix_vals[i];
     return result;
 }
@@ -150,11 +166,12 @@ void Matrix::matrixMultiply(const Matrix& a, const Matrix& b){
     if (this-> rows != a.rows || this->columns != b.columns) {
         throw std::runtime_error("Matrix dimensions must match target matrix.");
     }
-
+    std::fill(this->matrix_vals.begin(), this->matrix_vals.end(), 0.0f);
+    #pragma omp parallel for
     for (int a_row=0; a_row < a.rows; a_row++){
-        for (int b_col= 0; b_col < b.columns; b_col++){
-            this->matrix_vals[a_row * b.columns + b_col] = 0;
-            for (int k=0; k< a.columns; k++){
+        for (int k=0; k< a.columns; k++){
+            //this->matrix_vals[a_row * b.columns + b_col] = 0;
+            for (int b_col= 0; b_col < b.columns; b_col++){
                 this->matrix_vals[a_row * b.columns + b_col] += a.matrix_vals[a_row * a.columns + k] * b.matrix_vals[k * b.columns + b_col];
             }
         }
@@ -168,5 +185,6 @@ void Matrix::elementWiseMultiply(const Matrix& a, const Matrix& b){
     if (this->rows != a.rows || this->columns != a.columns){
         throw std::runtime_error("Matrix dimensions must match target matrix.");
     }
+    #pragma omp parallel for
     for (int i=0; i<a.rows*a.columns; i++) this->matrix_vals[i] = a.matrix_vals[i] * b.matrix_vals[i];
 }

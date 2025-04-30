@@ -3,7 +3,7 @@
 #include "../src/matrix/matrix.h"
 #include "matrix_test.h"
 #include <cassert>
-
+#include <chrono>
 
 int func1(int c, const std::string& m)
 {
@@ -390,9 +390,9 @@ int test_matrixMultiply() {
 
 int test_elementWiseMultiply() {
     float arr1[2][2] = {{1, 2}, {3, 4}};
-    float arr2[2][2] = {{5, 6}, {7, 8}};
-    Matrix m1(2, 2, *arr1);
-    Matrix m2(2, 2, *arr2);
+    float arr2[4] = {5, 6, 7, 8};
+    Matrix m1(2, 2, &arr1[0][0]);
+    Matrix m2(2, 2, arr2);
     Matrix result(2, 2);
 
     result.elementWiseMultiply(m1, m2);
@@ -406,6 +406,26 @@ int test_elementWiseMultiply() {
             }
 
     std::cout << "test_elementWiseMultiply passed.\n";
+    return 0;
+}
+
+int test_exec_time(){
+
+    auto start = std::chrono::high_resolution_clock::now();
+    int M = 2048*2, N = 2048*2;
+    float* vals = new float[M*N];
+    
+    for (int i = 0; i< M*N; i++) vals[i] = 1.0;
+    Matrix A(M,N, vals);
+    Matrix B(N,M, vals);
+    Matrix C(M,M);
+
+    C.matrixMultiply(A, B);
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+
+    std::cout << "Time taken: " << duration.count() << " ms" << std::endl;
+
     return 0;
 }
 
@@ -432,6 +452,7 @@ int run_matrix_tests() {
     if (test_invalid_elementwise_multiplication() != 0) status = -1;
     if (test_matrixMultiply() != 0) status = -1;
     if (test_elementWiseMultiply() != 0) status = -1;
+    test_exec_time();
 
     if (status == 0) {
         std::cout << "All matrix tests passed successfully!\n";
