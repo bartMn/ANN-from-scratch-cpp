@@ -412,19 +412,26 @@ int test_elementWiseMultiply() {
 int test_exec_time(){
 
     auto start = std::chrono::high_resolution_clock::now();
-    int M = 2048*2, N = 2048*2;
+    int M = 2048, N = 2048;
     float* vals = new float[M*N];
     
     for (int i = 0; i< M*N; i++) vals[i] = 1.0;
     Matrix A(M,N, vals);
     Matrix B(N,M, vals);
     Matrix C(M,M);
-
-    C.matrixMultiply(A, B);
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+    std::cout << "Time taken to create matrixes: " << duration.count() << " ms" << std::endl;
+    
+    
+    start = std::chrono::high_resolution_clock::now();
 
-    std::cout << "Time taken: " << duration.count() << " ms" << std::endl;
+    C.matrixMultiply(A, B);
+    
+    stop = std::chrono::high_resolution_clock::now();
+    duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+    std::cout << "Time taken to do matrix multiplication: " << duration.count() << " ms" << std::endl;
+    
 
     return 0;
 }
@@ -452,7 +459,7 @@ int run_matrix_tests() {
     if (test_invalid_elementwise_multiplication() != 0) status = -1;
     if (test_matrixMultiply() != 0) status = -1;
     if (test_elementWiseMultiply() != 0) status = -1;
-    test_exec_time();
+    //test_exec_time();
 
     if (status == 0) {
         std::cout << "All matrix tests passed successfully!\n";

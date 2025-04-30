@@ -2,6 +2,8 @@
 #define MATRIX_H
 #include <vector>
 
+class Functions;
+
 class Matrix{
     public:
         Matrix(int r, int c, float* mat);
@@ -28,7 +30,12 @@ class Matrix{
         friend Matrix operator*(const Matrix& a, const Matrix& b);
         friend Matrix operator^(const Matrix& a, const Matrix& b);
         friend Matrix operator/(const Matrix& m, double scalar);
+        friend Matrix operator+(const Matrix& m, double scalar);
+        friend Matrix operator+(double scalar, const Matrix& m);
+        friend Matrix operator-(const Matrix& m, double scalar);
+        friend Matrix operator-(double scalar, const Matrix& m);
     
+        friend class Functions;
 
     private:
         int rows;

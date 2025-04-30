@@ -89,6 +89,41 @@ Matrix operator+(const Matrix& a, const Matrix& b) {
     return result;
 }
 
+Matrix operator+(const Matrix& m, double scalar) {
+    
+    Matrix result(m.rows, m.columns);
+    
+    #pragma omp parallel for
+    for (int i=0; i<m.rows*m.columns; i++) result.matrix_vals[i] = m.matrix_vals[i] + scalar;
+    
+    return result;
+}
+
+Matrix operator+(double scalar, const Matrix& m) {
+    
+    return m + scalar;
+}
+
+Matrix operator-(const Matrix& m, double scalar) {
+    
+    Matrix result(m.rows, m.columns);
+    
+    #pragma omp parallel for
+    for (int i=0; i<m.rows*m.columns; i++) result.matrix_vals[i] = m.matrix_vals[i] - scalar;
+    
+    return result;
+}
+
+Matrix operator-(double scalar, const Matrix& m) {
+    
+    Matrix result(m.rows, m.columns);
+    
+    #pragma omp parallel for
+    for (int i=0; i<m.rows*m.columns; i++) result.matrix_vals[i]  = scalar - m.matrix_vals[i];
+    
+    return result;
+}
+
 Matrix operator-(const Matrix& a, const Matrix& b) {
     if (a.rows != b.rows || a.columns != b.columns) {
         throw std::runtime_error("Matrix dimensions must match for addition.");
