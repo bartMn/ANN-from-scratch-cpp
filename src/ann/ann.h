@@ -15,6 +15,7 @@ public:
     void forward(Matrix& input); // Forward pass
     void backprop(); // Backpropagation
     void update_weights(float learning_rate); // Update weights using gradients
+    void calcualte_loss(Matrix& target); // Calculate loss
 
 private:
     Functions F;
