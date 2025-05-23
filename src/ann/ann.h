@@ -13,7 +13,7 @@ public:
     ANN(std::vector<int> layer_sizes, std::vector<std::string> activations);
 
     void forward(Matrix& input); // Forward pass
-    void backprop(Matrix& input, Matrix& target); // Backpropagation
+    void backprop(); // Backpropagation
     void update_weights(float learning_rate); // Update weights using gradients
 
 private:
@@ -28,6 +28,7 @@ private:
     std::vector<Matrix> dw_temp; // Gradients for backpropagation
     std::vector<Matrix> db_accumulated; // Gradients for backpropagation
     std::vector<Matrix> db_temp; // Gradients for backpropagation
+    std::vector<Matrix> error_signals; // Error signals for backpropagation
     //std::unordered_map<std::string, std::function<void(Matrix&)>> activation_map;
     std::vector<std::function<void(Matrix&)>> activation_functions; // Activation derivatives
     std::vector<std::function<void(Matrix&, Matrix&)>> derivatives_functions; // Activation derivatives

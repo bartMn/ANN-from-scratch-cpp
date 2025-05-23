@@ -22,7 +22,8 @@ ANN::ANN(std::vector<int> layer_sizes, std::vector<std::string> activations){
         
         z_values.push_back(Matrix(layer_sizes[i], 1)); // Placeholder for outputs
         a_values.push_back(Matrix(layer_sizes[i], 1)); // Placeholder for outputs
-        
+        error_signals.push_back(Matrix(layer_sizes[i], 1)); // Placeholder for error signals
+
         db_accumulated.push_back(Matrix(layer_sizes[i], 1)); // Placeholder for gradients
         db_temp.push_back(Matrix(layer_sizes[i], 1));// Placeholder for gradients
         dw_accumulated.push_back(Matrix(layer_sizes[i], layer_sizes[i - 1])); // Placeholder for gradients
@@ -31,6 +32,7 @@ ANN::ANN(std::vector<int> layer_sizes, std::vector<std::string> activations){
         
         activation_functions.push_back(activation_map[activations[i - 1]]);
         derivatives_functions.push_back(derivative_map[activations[i - 1]]);
+        
     }
 
     for (auto & w : weights) {
@@ -53,18 +55,30 @@ void ANN::forward(Matrix& input) {
     a_values[0].setValsFormMatrix(input); // Input layer
     
     for (size_t i = 0; i < weights.size(); i++) {
-        //a_values[i].printMatrix();
-        
         z_values[i].matrixMultiply(weights[i], a_values[i]);// + biases[i];
-        //z_values[i].printMatrix();
-
         z_values[i] += biases[i];
-        //z_values[i].printMatrix();
-
         a_values[i+1].setValsFormMatrix(z_values[i]); // Copy z_values to a_values
         activation_functions[i]( a_values[i+1] ); // Apply the activation function
-            
     }
     
     a_values.back().printMatrix();
 }
+
+
+void ANN::backprop() {
+    for (int i = weights.size() - 1; i >= 0; i--) {
+        dw_temp[i] = error_signals[i] * a_values[i]; // Gradient for weights
+        db_temp[i] = error_signals[i]; // Gradient for biase    s
+        error_signals[i-1].matrixMultiply(weights[i], error_signals[i]); // Backpropagate the error signal
+        error_signals[i-1].elementWiseMultiply(error_signals[i-1], a_values[i]); // Element-wise multiplication
+        //error_signals[i-1] = (weights[i] * error_signals[i]) ^ derivatives_functions[i](z_values[i-1]); // Backpropagate the error signal
+    }
+}
+
+void ANN::update_weights(float learning_rate) {
+    for (size_t i = 0; i < weights.size(); i++) {
+        weights[i] -= dw_accumulated[i] * learning_rate;
+        biases[i] -= db_accumulated[i] * learning_rate;
+    }
+}
+
