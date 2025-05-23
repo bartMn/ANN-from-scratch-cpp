@@ -23,6 +23,7 @@ private:
     std::vector<Matrix> weights; // Weight matrices for each layer
     std::vector<Matrix> biases; // Bias vectors for each layer
     std::vector<Matrix> z_values; // Outputs for each layer
+    std::vector<Matrix> dz_values; // Outputs for each layer
     std::vector<Matrix> a_values; // Outputs after activation
     std::vector<Matrix> dw_accumulated; // Gradients for backpropagation
     std::vector<Matrix> dw_temp; // Gradients for backpropagation

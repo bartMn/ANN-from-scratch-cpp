@@ -21,6 +21,7 @@ ANN::ANN(std::vector<int> layer_sizes, std::vector<std::string> activations){
         biases.push_back(Matrix(layer_sizes[i], 1)); // Random initialization
         
         z_values.push_back(Matrix(layer_sizes[i], 1)); // Placeholder for outputs
+        dz_values.push_back(Matrix(layer_sizes[i], 1)); // Placeholder for derivatives of outputs
         a_values.push_back(Matrix(layer_sizes[i], 1)); // Placeholder for outputs
         error_signals.push_back(Matrix(layer_sizes[i], 1)); // Placeholder for error signals
 
@@ -66,13 +67,21 @@ void ANN::forward(Matrix& input) {
 
 
 void ANN::backprop() {
-    for (int i = weights.size() - 1; i >= 0; i--) {
-        dw_temp[i] = error_signals[i] * a_values[i]; // Gradient for weights
-        db_temp[i] = error_signals[i]; // Gradient for biase    s
-        error_signals[i-1].matrixMultiply(weights[i], error_signals[i]); // Backpropagate the error signal
-        error_signals[i-1].elementWiseMultiply(error_signals[i-1], a_values[i]); // Element-wise multiplication
+    for (int i = weights.size() - 1; i > 0; i--) {
+        dw_temp[i] = error_signals[i] * transpose(a_values[i]); // Gradient for weights
+        db_temp[i] = error_signals[i]; // Gradient for biases
+        //std::cout << error_signals[i-1].get_rows_num()<<" "<< error_signals[i-1].get_columns_num()<< "\n";
+        //std::cout << weights[i-1].get_rows_num()<<" "<< weights[i-1].get_columns_num()<< "\n";
+        //std::cout << error_signals[i].get_rows_num()<<" "<< error_signals[i].get_columns_num()<< "\n\n";
+        error_signals[i-1].matrixMultiply(transpose(weights[i]), error_signals[i]); // Backpropagate the error signal
+        derivatives_functions[i](dz_values[i-1], z_values[i-1]);
+        error_signals[i-1].elementWiseMultiply(error_signals[i-1], dz_values[i-1]); // Element-wise multiplication
         //error_signals[i-1] = (weights[i] * error_signals[i]) ^ derivatives_functions[i](z_values[i-1]); // Backpropagate the error signal
     }
+    // Calculate gradients for the first layer
+    dw_temp[0] = error_signals[0] * transpose(a_values[0]); 
+    db_temp[0] = error_signals[0];
+        
 }
 
 void ANN::update_weights(float learning_rate) {
