@@ -41,6 +41,7 @@ class Matrix {
         friend Matrix operator-(const Matrix& m, double scalar); ///< Subtracts a scalar from a matrix.
         friend Matrix operator-(double scalar, const Matrix& m); ///< Subtracts a matrix from a scalar.
 
+        friend Matrix transpose(const Matrix& m);
         friend class Functions; ///< Allows the Functions class to access private members of Matrix.
 
     private:

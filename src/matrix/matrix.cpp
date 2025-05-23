@@ -382,3 +382,15 @@ void Matrix::randomInit() {
         this->matrix_vals[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
     }
 }
+
+
+Matrix transpose(const Matrix& m) {
+    Matrix result(m.columns, m.rows);
+    #pragma omp parallel for
+    for (int r = 0; r < m.rows; r++) {
+        for (int c = 0; c < m.columns; c++) {
+            result.matrix_vals[c * m.rows + r] = m.matrix_vals[r * m.columns + c];
+        }
+    }
+    return result;
+}
