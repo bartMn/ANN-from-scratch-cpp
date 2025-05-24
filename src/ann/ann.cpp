@@ -54,14 +54,12 @@ ANN::ANN(std::vector<int> layer_sizes, std::vector<std::string> activations){
 
 void ANN::forward(Matrix& input) {
     a_values[0].setValsFormMatrix(input); // Input layer
-    
     for (size_t i = 0; i < weights.size(); i++) {
         z_values[i].matrixMultiply(weights[i], a_values[i]);// + biases[i];
         z_values[i] += biases[i];
         a_values[i+1].setValsFormMatrix(z_values[i]); // Copy z_values to a_values
         activation_functions[i]( a_values[i+1] ); // Apply the activation function
     }
-    
     a_values.back().printMatrix();
 }
 
@@ -70,13 +68,11 @@ void ANN::backprop() {
     for (int i = weights.size() - 1; i > 0; i--) {
         dw_temp[i] = error_signals[i] * transpose(a_values[i]); // Gradient for weights
         db_temp[i] = error_signals[i]; // Gradient for biases
-        //std::cout << error_signals[i-1].get_rows_num()<<" "<< error_signals[i-1].get_columns_num()<< "\n";
-        //std::cout << weights[i-1].get_rows_num()<<" "<< weights[i-1].get_columns_num()<< "\n";
-        //std::cout << error_signals[i].get_rows_num()<<" "<< error_signals[i].get_columns_num()<< "\n\n";
+        dw_accumulated[i] += dw_temp[i]; // Accumulate gradients
+        db_accumulated[i] += db_temp[i]; // Accumulate gradients
         error_signals[i-1].matrixMultiply(transpose(weights[i]), error_signals[i]); // Backpropagate the error signal
         derivatives_functions[i](dz_values[i-1], z_values[i-1]);
         error_signals[i-1].elementWiseMultiply(error_signals[i-1], dz_values[i-1]); // Element-wise multiplication
-        //error_signals[i-1] = (weights[i] * error_signals[i]) ^ derivatives_functions[i](z_values[i-1]); // Backpropagate the error signal
     }
     // Calculate gradients for the first layer
     dw_temp[0] = error_signals[0] * transpose(a_values[0]); 
@@ -84,10 +80,35 @@ void ANN::backprop() {
         
 }
 
-void ANN::update_weights(float learning_rate) {
+void ANN::update_weights() {
     for (size_t i = 0; i < weights.size(); i++) {
         weights[i] -= dw_accumulated[i] * learning_rate;
         biases[i] -= db_accumulated[i] * learning_rate;
     }
 }
 
+void ANN::reset_gradients() {
+    for (size_t i = 0; i < dw_accumulated.size(); i++) {
+        dw_accumulated[i].resetWithVal(0.0f);
+        db_accumulated[i].resetWithVal(0.0f);
+    }
+}
+
+
+float ANN::calcualte_loss(Matrix& target) {
+    if (a_values.back().get_rows_num() != target.get_rows_num() || a_values.back().get_columns_num() != target.get_columns_num()) {
+        throw std::runtime_error("Output dimensions must match target dimensions for loss calculation.");
+    }
+    float loss = 0.0f;
+    F.diff(error_signals.back(), a_values.back(), target);
+    if (true) {
+        F.MSE_derivative(error_signals.back(), error_signals.back());
+        loss = F.MSE(error_signals.back());
+    }
+    else {
+        F.Cross_Entropy_derivative(error_signals.back(), error_signals.back());
+        loss = F.Cross_Entropy(a_values.back(), target);
+    }
+    std::cout << "Loss: " << loss << "\n";
+    return loss;
+}

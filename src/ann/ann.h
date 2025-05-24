@@ -14,11 +14,14 @@ public:
 
     void forward(Matrix& input); // Forward pass
     void backprop(); // Backpropagation
-    void update_weights(float learning_rate); // Update weights using gradients
-    void calcualte_loss(Matrix& target); // Calculate loss
+    void set_optimizer(std::string optimizer = "SGD", std::string loss_function = "MSE", float learning_rate = 0.01f); // Set optimizer and loss function
+    void update_weights(); // Update weights using gradients
+    float calcualte_loss(Matrix& target); // Calculate loss
+    void reset_gradients(); // Reset gradients for backpropagation
 
 private:
     Functions F;
+    float learning_rate = 0.01f; // Learning rate for weight updates
     std::unordered_map<std::string, std::function<void(Matrix&)>> activation_map;
     std::unordered_map<std::string, std::function<void(Matrix&, Matrix&)>> derivative_map;
     std::vector<Matrix> weights; // Weight matrices for each layer
