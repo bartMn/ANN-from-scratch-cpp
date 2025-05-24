@@ -100,12 +100,14 @@ float ANN::calcualte_loss(Matrix& target) {
         throw std::runtime_error("Output dimensions must match target dimensions for loss calculation.");
     }
     float loss = 0.0f;
-    F.diff(error_signals.back(), a_values.back(), target);
+    
     if (true) {
-        F.MSE_derivative(error_signals.back(), error_signals.back());
+        F.diff(error_signals.back(), a_values.back(), target);
         loss = F.MSE(error_signals.back());
+        F.MSE_derivative(error_signals.back(), error_signals.back());
     }
     else {
+        F.diff(error_signals.back(), a_values.back(), target);
         F.Cross_Entropy_derivative(error_signals.back(), error_signals.back());
         loss = F.Cross_Entropy(a_values.back(), target);
     }
