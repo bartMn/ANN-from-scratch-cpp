@@ -17,6 +17,7 @@ class Matrix {
         void printMatrix(); ///< Prints the matrix to the console.
         float get_val(int row, int col); ///< Gets the value at a specific position in the matrix.
         void randomInit(); ///< Initializes the matrix with random values.
+        void resetWithVal(float val);
         // Operator overloads for matrix operations
         Matrix& operator+=(const Matrix& other); ///< Adds another matrix to this matrix.
         Matrix& operator-=(const Matrix& other); ///< Subtracts another matrix from this matrix.

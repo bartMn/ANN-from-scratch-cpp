@@ -394,3 +394,10 @@ Matrix transpose(const Matrix& m) {
     }
     return result;
 }
+
+void Matrix::resetWithVal(float val) {
+    #pragma omp paraller for
+    for (int i = 0; i < rows * columns; i++) {
+        matrix_vals[i] = val;
+    }
+}
