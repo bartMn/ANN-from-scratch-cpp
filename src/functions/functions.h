@@ -15,6 +15,7 @@ class Functions {
         void sigmoid(Matrix& m); ///< Applies the sigmoid activation function element-wise.
         void softmax(Matrix& m); ///< Applies the softmax function to the matrix.
         void Tanh(Matrix& m); ///< Applies the hyperbolic tangent function element-wise.
+        void linear(Matrix& m); ///< Applies the linear activation function element-wise.
 
         // Loss functions
         void diff(Matrix& m_diff, Matrix& predictions, Matrix& y); ///< Computes the difference between predictions and ground truth.
@@ -25,6 +26,9 @@ class Functions {
         // Derivatives of activation and loss functions
         void ReLu_derivative(Matrix& m_derivatives, Matrix& m); ///< Computes the derivative of the ReLU function.
         void sigmoid_derivative(Matrix& m_derivatives, Matrix& m); ///< Computes the derivative of the sigmoid function.
+        void Tanh_derivative(Matrix& m_derivatives, Matrix& m); ///< Computes the derivative of the Tanh function.
+        void linear_derivative(Matrix& m_derivatives, Matrix& m); ///< Computes the derivative of the linear function.
+        void softmax_derivative(Matrix& m_derivatives, Matrix& m); ///< Computes the derivative of the softmax function.
         void MSE_derivative(Matrix& m_derivatives, Matrix& m_diff); ///< Computes the derivative of the MSE loss.
         void Cross_Entropy_derivative(Matrix& m_derivatives, Matrix& m_diff); ///< Computes the derivative of the cross-entropy loss.
 

@@ -7,8 +7,19 @@ ANN::ANN(std::vector<int> layer_sizes, std::vector<std::string> activations){
     //activation_map["Relu"] = [&]() { F.ReLu(); };
     activation_map["ReLu"] = [&](Matrix& m) { F.ReLu(m); };
     derivative_map["ReLu"] = [&](Matrix& m_derivatives, Matrix& m) { F.ReLu_derivative(m_derivatives, m); };
+    
     activation_map["sigmoid"] = [&](Matrix& m) { F.sigmoid(m); };
     derivative_map["sigmoid"] = [&](Matrix& m_derivatives, Matrix& m) { F.sigmoid_derivative(m_derivatives, m); };
+    
+    activation_map["softmax"] = [&](Matrix& m) { F.softmax(m); };
+    derivative_map["softmax"] = [&](Matrix& m_derivatives, Matrix& m) { F.softmax_derivative(m_derivatives, m); };
+    
+    activation_map["Tanh"] = [&](Matrix& m) { F.Tanh(m); };
+    derivative_map["Tanh"] = [&](Matrix& m_derivatives, Matrix& m) { F.Tanh_derivative(m_derivatives, m); };
+    
+    activation_map["linear"] = [&](Matrix& m) { F.linear(m); };
+    derivative_map["linear"] = [&](Matrix& m_derivatives, Matrix& m) { F.linear_derivative(m_derivatives, m); };
+    
     //activation_map["Cross_Entropy"] = [&](Matrix& m) { F.Cross_Entropy(m); };
     //derivative_map["Cross_Entropy"] = [&](Matrix& m_derivatives, Matrix& m) { F.Cross_Entropy_derivative(m_derivatives, m); };
 
@@ -29,7 +40,6 @@ ANN::ANN(std::vector<int> layer_sizes, std::vector<std::string> activations){
         db_temp.push_back(Matrix(layer_sizes[i], 1));// Placeholder for gradients
         dw_accumulated.push_back(Matrix(layer_sizes[i], layer_sizes[i - 1])); // Placeholder for gradients
         dw_temp.push_back(Matrix(layer_sizes[i], layer_sizes[i - 1])); // Placeholder for gradients
-        
         
         activation_functions.push_back(activation_map[activations[i - 1]]);
         derivatives_functions.push_back(derivative_map[activations[i - 1]]);

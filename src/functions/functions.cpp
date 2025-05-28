@@ -40,6 +40,17 @@ void Functions::Tanh(Matrix& m){
     for (int i = 0; i < m.columns*m.rows; i++) m.matrix_vals[i] = std::tanh(m.matrix_vals[i]);
 }
 
+/**
+ * @brief Applies the linear activation function element-wise (identity function).
+ * @param m The matrix to apply the linear function on.
+ */
+ void Functions::linear(Matrix& m) {
+    // Linear activation is essentially the identity function, so no changes are needed.
+    // This function is included for consistency and clarity.
+}
+
+
+
 
 /**
  * @brief Computes the difference between predictions and ground truth.
@@ -140,6 +151,19 @@ void Functions::sigmoid_derivative(Matrix& m_derivatives, Matrix& m){
     m_derivatives.elementWiseMultiply(m, 1.0 - m);
 }
 
+
+/**
+ * @brief Computes the derivative of the linear function (always 1).
+ * @param m_derivatives The matrix to store the derivatives.
+ * @param m The matrix of input values.
+ */
+ void Functions::linear_derivative(Matrix& m_derivatives, Matrix& m) {
+    for (int i = 0; i < m.columns * m.rows; i++) {
+        m_derivatives.matrix_vals[i] = 1.0f; // Derivative of linear function is 1.
+    }
+}
+
+
 /**
  * @brief Computes the derivative of the MSE loss.
  * @param m_derivatives The matrix to store the derivatives.
@@ -162,5 +186,43 @@ void Functions::Cross_Entropy_derivative(Matrix& m_derivatives, Matrix& m_diff){
         m_derivatives.matrix_vals[i] = -m_diff.matrix_vals[i];
     }
 }
-//void Functions::softmax_derivative(Matrix& m);
-//void Functions::Tanh_derivative(Matrix& m);
+
+/**
+ * @brief Computes the derivative of the hyperbolic tangent (tanh) function.
+ * @param m_derivatives The matrix to store the derivatives.
+ * @param m The matrix of input values.
+ */
+ void Functions::Tanh_derivative(Matrix& m_derivatives, Matrix& m) {
+    for (int i = 0; i < m.columns * m.rows; i++) {
+        float tanh_val = std::tanh(m.matrix_vals[i]);
+        m_derivatives.matrix_vals[i] = 1.0f - tanh_val * tanh_val; // Derivative of tanh is 1 - tanh^2(x).
+    }
+}
+
+/**
+ * @brief Computes the derivative of the softmax function.
+ * @param m_derivatives The matrix to store the derivatives.
+ * @param m The matrix of input values (assumed to be the output of the softmax function).
+ */
+ void Functions::softmax_derivative(Matrix& m_derivatives, Matrix& m) {
+    // Softmax derivative is computed as the Jacobian matrix.
+    // For each element, the derivative is:
+    // d(softmax_i)/d(x_j) = softmax_i * (1 - softmax_i) if i == j
+    //                      -softmax_i * softmax_j if i != j
+
+    for (int i = 0; i < m.rows; i++) {
+        for (int j = 0; j < m.columns; j++) {
+            float softmax_i = m.matrix_vals[i * m.columns + j];
+            for (int k = 0; k < m.columns; k++) {
+                if (j == k) {
+                    m_derivatives.matrix_vals[i * m.columns * m.columns + j * m.columns + k] =
+                        softmax_i * (1.0f - softmax_i);
+                } else {
+                    float softmax_k = m.matrix_vals[i * m.columns + k];
+                    m_derivatives.matrix_vals[i * m.columns * m.columns + j * m.columns + k] =
+                        -softmax_i * softmax_k;
+                }
+            }
+        }
+    }
+}
