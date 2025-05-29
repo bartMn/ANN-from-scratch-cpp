@@ -65,7 +65,7 @@ void Functions::diff(Matrix& m_diff, Matrix& predictions, Matrix& y){
     }
 
     for (int i = 0; i < predictions.rows * predictions.columns; i++) {
-        m_diff.matrix_vals[i] = y.matrix_vals[i] - predictions.matrix_vals[i];
+        m_diff.matrix_vals[i] = predictions.matrix_vals[i] - y.matrix_vals[i];
     }
 }
 
