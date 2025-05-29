@@ -11,6 +11,7 @@
 class ANN {
 public:
     ANN(std::vector<int> layer_sizes, std::vector<std::string> activations);
+    ~ANN();
 
     void forward(Matrix& input); // Forward pass
     void backprop(); // Backpropagation
@@ -21,7 +22,8 @@ public:
 
 private:
     Functions F;
-    float learning_rate = 0.01f; // Learning rate for weight updates
+    float learning_rate; // Learning rate for weight updates
+    char *loss_function; // Loss function to be used (e.g., "MSE", "Cross_Entropy")
     std::unordered_map<std::string, std::function<void(Matrix&)>> activation_map;
     std::unordered_map<std::string, std::function<void(Matrix&, Matrix&)>> derivative_map;
     std::vector<Matrix> weights; // Weight matrices for each layer

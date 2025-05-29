@@ -1,5 +1,6 @@
 #include "ann.h"
 #include <iostream>
+#include <cstring>
 
 ANN::ANN(std::vector<int> layer_sizes, std::vector<std::string> activations){
     //std::function<void(Matrix&)> myFunc = [&](int a, int b) { obj.func1(a, b); };
@@ -20,9 +21,6 @@ ANN::ANN(std::vector<int> layer_sizes, std::vector<std::string> activations){
     activation_map["linear"] = [&](Matrix& m) { F.linear(m); };
     derivative_map["linear"] = [&](Matrix& m_derivatives, Matrix& m) { F.linear_derivative(m_derivatives, m); };
     
-    //activation_map["Cross_Entropy"] = [&](Matrix& m) { F.Cross_Entropy(m); };
-    //derivative_map["Cross_Entropy"] = [&](Matrix& m_derivatives, Matrix& m) { F.Cross_Entropy_derivative(m_derivatives, m); };
-
     a_values.push_back(Matrix(layer_sizes[0], 1)); // Placeholder for outputs
     for (size_t i = 1; i < layer_sizes.size(); i++) {
         if (layer_sizes[i] == 0 || layer_sizes[i - 1] == 0) {
@@ -53,6 +51,10 @@ ANN::ANN(std::vector<int> layer_sizes, std::vector<std::string> activations){
     for (auto & b : biases) {
         b.randomInit();
     }
+
+    this->learning_rate = 0.01f; // Default learning rate
+    this->loss_function = new char[4]; // Allocate memory for "MSE"
+    strcpy(this->loss_function, "MSE");
     std::cout << "ANN initialized with " << layer_sizes.size() << " layers.\n";
     std::cout << weights[0].get_rows_num() << "\n";
     std::cout << "weights.size() = " << weights.size() << "\n";
@@ -90,6 +92,27 @@ void ANN::backprop() {
         
 }
 
+void ANN::set_optimizer(std::string optimizer, std::string loss_function, float learning_rate) {
+    if (optimizer == "SGD") {
+        std::cout << "Using Stochastic Gradient Descent (SGD) optimizer.\n";
+    }
+    else  {
+        throw std::runtime_error("Unsupported optimizer: " + optimizer);
+    }
+    
+    if (loss_function == "MSE" || loss_function == "Cross_Entropy"){
+        std::cout << "Using " << loss_function << " loss function.\n";
+    }
+    else {
+        throw std::runtime_error("Unsupported loss function: " + loss_function);
+    }
+    delete[] this->loss_function; // Free previous memory
+    this->loss_function = new char[loss_function.length() + 1]; // Allocate memory for the new loss function
+    strcpy(this->loss_function, loss_function.c_str()); // Copy the new loss function
+    this->learning_rate = learning_rate;    
+    std::cout << "Optimizer set to " << optimizer << " with learning rate " << learning_rate << ".\n";
+}
+
 void ANN::update_weights() {
     for (size_t i = 0; i < weights.size(); i++) {
         weights[i] -= dw_accumulated[i] * learning_rate;
@@ -111,16 +134,23 @@ float ANN::calcualte_loss(Matrix& target) {
     }
     float loss = 0.0f;
     
-    if (true) {
+    if (strcmp(loss_function, "MSE") == 0) {
         F.diff(error_signals.back(), a_values.back(), target);
         loss = F.MSE(error_signals.back());
         F.MSE_derivative(error_signals.back(), error_signals.back());
+        derivatives_functions[derivatives_functions.size()-1](dz_values[dz_values.size() - 1], z_values[dz_values.size() - 1]);
+        error_signals[error_signals.size()-1].elementWiseMultiply(error_signals[error_signals.size()-1], dz_values[dz_values.size()-1]);
+    
     }
     else {
         F.diff(error_signals.back(), a_values.back(), target);
-        F.Cross_Entropy_derivative(error_signals.back(), error_signals.back());
+        //F.Cross_Entropy_derivative(error_signals.back(), error_signals.back());
         loss = F.Cross_Entropy(a_values.back(), target);
     }
     std::cout << "Loss: " << loss << "\n";
     return loss;
+}
+
+ANN::~ANN() {
+    delete[] this->loss_function; // Free allocated memory
 }
