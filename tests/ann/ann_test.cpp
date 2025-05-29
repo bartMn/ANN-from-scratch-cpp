@@ -2,8 +2,6 @@
 #include "../src/functions/functions.h"
 #include "../src/ann/ann.h"
 #include <iostream>
-#include <thread>   // for sleep_for
-#include <chrono>   // for seconds
 
 int test_forward() {
     ANN ann({2, 500, 500, 1}, {"ReLu","ReLu", "ReLu"});
@@ -43,7 +41,7 @@ int test_one_sample_training() {
     Matrix input(2, 1, *v);
     Matrix target(2, 1, *v);
     
-    for (int ct = 0; ct < 10; ct++) {
+    for (int ct = 0; ct < 40; ct++) {
         std::cout << "Training iteration: " << ct << "\n";
         ann.forward(input);
         ann.reset_gradients(); // Reset gradients before each training step
@@ -65,7 +63,7 @@ int run_ann_tests() {
     if (test_backprop() != 0) status = -1;
     if (test_calcualte_loss() != 0) status = -1;
     if (test_one_sample_training() != 0) status = -1;
-    //std::this_thread::sleep_for(std::chrono::seconds(1));
+
     if (status == 0) {
         std::cout << "All ANN tests passed successfully!\n";
     } else {
