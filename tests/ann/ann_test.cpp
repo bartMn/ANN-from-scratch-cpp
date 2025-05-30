@@ -86,6 +86,12 @@ int test_set_optimizer_invalid() {
 int run_ann_tests() {
     int status = 0;
 
+    std::cout << std::endl;
+    std::cout << "###################################################" << std::endl;
+    std::cout << "##############  RUNNING ANN TESTS... ##############" << std::endl;
+    std::cout << "###################################################" << std::endl;
+    std::cout << std::endl;
+
     if (test_forward() != 0) status = -1;
     if (test_backprop() != 0) status = -1;
     if (test_calcualte_loss() != 0) status = -1;
@@ -99,5 +105,12 @@ int run_ann_tests() {
     } else {
         std::cerr << "Some ANN tests failed.\n";
     }
+
+    std::cout << std::endl;
+    std::cout << "###################################################" << std::endl;
+    std::cout << "###############  ANN TESTS DONE... ################" << std::endl;
+    std::cout << "###################################################" << std::endl;
+    std::cout << std::endl;
+
     return 0;
 }

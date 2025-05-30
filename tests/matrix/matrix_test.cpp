@@ -546,6 +546,13 @@ int test_exec_time(){
  */
 int run_matrix_tests() {
     int status = 0;
+
+    std::cout << std::endl;
+    std::cout << "###################################################" << std::endl;
+    std::cout << "###########   RUNNING MATRIX TESTS... #############" << std::endl;
+    std::cout << "###################################################" << std::endl;
+    std::cout << std::endl;
+
     if (test_constructor() != 0) status = -1;
     if (test_get_rows_num() != 0) status = -1;
     if (test_get_columns_num() != 0) status = -1;
@@ -574,6 +581,12 @@ int run_matrix_tests() {
     } else {
         std::cerr << "Some matrix tests failed.\n";
     }
+
+    std::cout << std::endl;
+    std::cout << "###################################################" << std::endl;
+    std::cout << "##############  MATRIX TESTS DONE... ##############" << std::endl;
+    std::cout << "###################################################" << std::endl;
+    std::cout << std::endl;
 
     return 0;
 }
