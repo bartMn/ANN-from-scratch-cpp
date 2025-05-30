@@ -12,6 +12,7 @@ int test_forward() {
     std::cout << "test_forward passed.\n";
     return 0;
 }
+
 int test_backprop() {
     ANN ann({2, 500, 250, 1}, {"ReLu","ReLu", "ReLu"});
     float v[2][1] = {{1.0}, {2.0}}; 
@@ -54,6 +55,32 @@ int test_one_sample_training() {
     return 0;
 }
 
+int test_set_optimizer_valid() {
+    ANN ann({2, 3, 1}, {"ReLu", "linear"});
+    try {
+        ann.set_optimizer("SGD", "MSE", 0.05f);
+        ann.set_optimizer("SGD", "Cross_Entropy", 0.01f);
+        std::cout << "test_set_optimizer_valid passed.\n";
+        return 0;
+    } catch (...) {
+        std::cout << "test_set_optimizer_valid failed.\n";
+        return -1;
+    }
+}
+
+int test_set_optimizer_invalid() {
+    ANN ann({2, 3, 1}, {"ReLu", "linear"});
+    try {
+        ann.set_optimizer("Adam", "MSE", 0.01f);
+        std::cout << "test_set_optimizer_invalid failed (no exception).\n";
+        return -1;
+    } catch (...) {
+        std::cout << "test_set_optimizer_invalid passed.\n";
+        return 0;
+    }
+}
+
+
 
 
 int run_ann_tests() {
@@ -63,6 +90,9 @@ int run_ann_tests() {
     if (test_backprop() != 0) status = -1;
     if (test_calcualte_loss() != 0) status = -1;
     if (test_one_sample_training() != 0) status = -1;
+    if (test_set_optimizer_valid() != 0) status = -1;
+    if (test_set_optimizer_invalid() != 0) status = -1;
+
 
     if (status == 0) {
         std::cout << "All ANN tests passed successfully!\n";
