@@ -204,24 +204,18 @@ void Functions::Tanh_derivative(Matrix& m_derivatives, Matrix& m) {
  * @param m The matrix of input values (assumed to be the output of the softmax function).
  */
 void Functions::softmax_derivative(Matrix& m_derivatives, Matrix& m) {
-   // Softmax derivative is computed as the Jacobian matrix.
-   // For each element, the derivative is:
-   // d(softmax_i)/d(x_j) = softmax_i * (1 - softmax_i) if i == j
-   //                      -softmax_i * softmax_j if i != j
+    if (m_derivatives.rows != m.rows || m_derivatives.columns != m.rows) {
+        throw std::runtime_error("Matrix dimensions must match for softmax derivative calculation.");
+    }
 
-   for (int i = 0; i < m.rows; i++) {
-       for (int j = 0; j < m.columns; j++) {
-           float softmax_i = m.matrix_vals[i * m.columns + j];
-           for (int k = 0; k < m.columns; k++) {
-               if (j == k) {
-                   m_derivatives.matrix_vals[i * m.columns * m.columns + j * m.columns + k] =
-                       softmax_i * (1.0f - softmax_i);
-               } else {
-                   float softmax_k = m.matrix_vals[i * m.columns + k];
-                   m_derivatives.matrix_vals[i * m.columns * m.columns + j * m.columns + k] =
-                       -softmax_i * softmax_k;
-               }
-           }
-       }
-   }
-}
+    for (int r = 0; r < m_derivatives.rows; r++) {
+        for (int c = 0; c < m_derivatives.columns; c++) {
+            if (r == c){
+                m_derivatives.matrix_vals[r * m_derivatives.columns + c] = m.matrix_vals[r] * (1.0f - m.matrix_vals[r]); // Diagonal elements.
+            } 
+            else {
+                m_derivatives.matrix_vals[r * m_derivatives.columns + c] = -m.matrix_vals[r] * m.matrix_vals[c]; // Off-diagonal elements.
+            }
+        }
+    }
+}   
