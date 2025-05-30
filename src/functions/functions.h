@@ -30,7 +30,7 @@ class Functions {
         void linear_derivative(Matrix& m_derivatives, Matrix& m); ///< Computes the derivative of the linear function.
         void softmax_derivative(Matrix& m_derivatives, Matrix& m); ///< Computes the derivative of the softmax function.
         void MSE_derivative(Matrix& m_derivatives, Matrix& m_diff); ///< Computes the derivative of the MSE loss.
-        void Cross_Entropy_derivative(Matrix& m_derivatives, Matrix& m_diff); ///< Computes the derivative of the cross-entropy loss.
+        void Cross_Entropy_derivative(Matrix& m_derivatives, Matrix& y, Matrix& y_pred); ///< Computes the derivative of the cross-entropy loss.
 
         //void softmax_derivative(Matrix& m_derivatives, Matrix& m);
         //void Tanh_derivative(Matrix& m_derivatives, Matrix& m);

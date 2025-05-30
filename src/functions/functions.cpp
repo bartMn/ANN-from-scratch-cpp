@@ -180,9 +180,9 @@ void Functions::MSE_derivative(Matrix& m_derivatives, Matrix& m_diff){
  * @param m_derivatives The matrix to store the derivatives.
  * @param m_diff The matrix of differences between predictions and ground truth.
  */
-void Functions::Cross_Entropy_derivative(Matrix& m_derivatives, Matrix& m_diff){
-    for (int i = 0; i < m_diff.columns*m_diff.rows; i++) {
-        m_derivatives.matrix_vals[i] = -m_diff.matrix_vals[i];
+void Functions::Cross_Entropy_derivative(Matrix& m_derivatives, Matrix& y, Matrix& y_pred){
+    for (int i = 0; i < y.columns*y.rows; i++) {
+        m_derivatives.matrix_vals[i] = - y.matrix_vals[i] / (y_pred.matrix_vals[i] + 1e-9);
     }
 }
 
@@ -191,11 +191,11 @@ void Functions::Cross_Entropy_derivative(Matrix& m_derivatives, Matrix& m_diff){
  * @param m_derivatives The matrix to store the derivatives.
  * @param m The matrix of input values.
  */
- void Functions::Tanh_derivative(Matrix& m_derivatives, Matrix& m) {
-    for (int i = 0; i < m.columns * m.rows; i++) {
-        float tanh_val = std::tanh(m.matrix_vals[i]);
-        m_derivatives.matrix_vals[i] = 1.0f - tanh_val * tanh_val; // Derivative of tanh is 1 - tanh^2(x).
-    }
+void Functions::Tanh_derivative(Matrix& m_derivatives, Matrix& m) {
+   for (int i = 0; i < m.columns * m.rows; i++) {
+       float tanh_val = std::tanh(m.matrix_vals[i]);
+       m_derivatives.matrix_vals[i] = 1.0f - tanh_val * tanh_val; // Derivative of tanh is 1 - tanh^2(x).
+   }
 }
 
 /**
@@ -203,25 +203,25 @@ void Functions::Cross_Entropy_derivative(Matrix& m_derivatives, Matrix& m_diff){
  * @param m_derivatives The matrix to store the derivatives.
  * @param m The matrix of input values (assumed to be the output of the softmax function).
  */
- void Functions::softmax_derivative(Matrix& m_derivatives, Matrix& m) {
-    // Softmax derivative is computed as the Jacobian matrix.
-    // For each element, the derivative is:
-    // d(softmax_i)/d(x_j) = softmax_i * (1 - softmax_i) if i == j
-    //                      -softmax_i * softmax_j if i != j
+void Functions::softmax_derivative(Matrix& m_derivatives, Matrix& m) {
+   // Softmax derivative is computed as the Jacobian matrix.
+   // For each element, the derivative is:
+   // d(softmax_i)/d(x_j) = softmax_i * (1 - softmax_i) if i == j
+   //                      -softmax_i * softmax_j if i != j
 
-    for (int i = 0; i < m.rows; i++) {
-        for (int j = 0; j < m.columns; j++) {
-            float softmax_i = m.matrix_vals[i * m.columns + j];
-            for (int k = 0; k < m.columns; k++) {
-                if (j == k) {
-                    m_derivatives.matrix_vals[i * m.columns * m.columns + j * m.columns + k] =
-                        softmax_i * (1.0f - softmax_i);
-                } else {
-                    float softmax_k = m.matrix_vals[i * m.columns + k];
-                    m_derivatives.matrix_vals[i * m.columns * m.columns + j * m.columns + k] =
-                        -softmax_i * softmax_k;
-                }
-            }
-        }
-    }
+   for (int i = 0; i < m.rows; i++) {
+       for (int j = 0; j < m.columns; j++) {
+           float softmax_i = m.matrix_vals[i * m.columns + j];
+           for (int k = 0; k < m.columns; k++) {
+               if (j == k) {
+                   m_derivatives.matrix_vals[i * m.columns * m.columns + j * m.columns + k] =
+                       softmax_i * (1.0f - softmax_i);
+               } else {
+                   float softmax_k = m.matrix_vals[i * m.columns + k];
+                   m_derivatives.matrix_vals[i * m.columns * m.columns + j * m.columns + k] =
+                       -softmax_i * softmax_k;
+               }
+           }
+       }
+   }
 }
