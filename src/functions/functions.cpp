@@ -40,6 +40,17 @@ void Functions::Tanh(Matrix& m){
     for (int i = 0; i < m.columns*m.rows; i++) m.matrix_vals[i] = std::tanh(m.matrix_vals[i]);
 }
 
+/**
+ * @brief Applies the linear activation function element-wise (identity function).
+ * @param m The matrix to apply the linear function on.
+ */
+ void Functions::linear(Matrix& m) {
+    // Linear activation is essentially the identity function, so no changes are needed.
+    // This function is included for consistency and clarity.
+}
+
+
+
 
 /**
  * @brief Computes the difference between predictions and ground truth.
@@ -108,11 +119,10 @@ float Functions::Cross_Entropy(Matrix& predictions, Matrix& y) {
 
     float cross_entropy = 0.0f;
     for (int i = 0; i < predictions.rows * predictions.columns; i++) {
-        if (y.matrix_vals[i] > 0) { // Avoid log(0) for non-target classes
+        if (y.matrix_vals[i] > 0) { 
             cross_entropy -= y.matrix_vals[i] * std::log(predictions.matrix_vals[i] + 1e-9f); // Add small epsilon to avoid log(0)
         }
     }
-    cross_entropy /= predictions.rows*predictions.columns; // Average over the number of samples
     return cross_entropy;
 }
 
@@ -140,6 +150,19 @@ void Functions::sigmoid_derivative(Matrix& m_derivatives, Matrix& m){
     m_derivatives.elementWiseMultiply(m, 1.0 - m);
 }
 
+
+/**
+ * @brief Computes the derivative of the linear function (always 1).
+ * @param m_derivatives The matrix to store the derivatives.
+ * @param m The matrix of input values.
+ */
+ void Functions::linear_derivative(Matrix& m_derivatives, Matrix& m) {
+    for (int i = 0; i < m.columns * m.rows; i++) {
+        m_derivatives.matrix_vals[i] = 1.0f; // Derivative of linear function is 1.
+    }
+}
+
+
 /**
  * @brief Computes the derivative of the MSE loss.
  * @param m_derivatives The matrix to store the derivatives.
@@ -157,10 +180,42 @@ void Functions::MSE_derivative(Matrix& m_derivatives, Matrix& m_diff){
  * @param m_derivatives The matrix to store the derivatives.
  * @param m_diff The matrix of differences between predictions and ground truth.
  */
-void Functions::Cross_Entropy_derivative(Matrix& m_derivatives, Matrix& m_diff){
-    for (int i = 0; i < m_diff.columns*m_diff.rows; i++) {
-        m_derivatives.matrix_vals[i] = -m_diff.matrix_vals[i];
+void Functions::Cross_Entropy_derivative(Matrix& m_derivatives, Matrix& y, Matrix& y_pred){
+    for (int i = 0; i < y.columns*y.rows; i++) {
+        m_derivatives.matrix_vals[i] = - y.matrix_vals[i] / (y_pred.matrix_vals[i] + 1e-9);
     }
 }
-//void Functions::softmax_derivative(Matrix& m);
-//void Functions::Tanh_derivative(Matrix& m);
+
+/**
+ * @brief Computes the derivative of the hyperbolic tangent (tanh) function.
+ * @param m_derivatives The matrix to store the derivatives.
+ * @param m The matrix of input values.
+ */
+void Functions::Tanh_derivative(Matrix& m_derivatives, Matrix& m) {
+   for (int i = 0; i < m.columns * m.rows; i++) {
+       float tanh_val = std::tanh(m.matrix_vals[i]);
+       m_derivatives.matrix_vals[i] = 1.0f - tanh_val * tanh_val; // Derivative of tanh is 1 - tanh^2(x).
+   }
+}
+
+/**
+ * @brief Computes the derivative of the softmax function.
+ * @param m_derivatives The matrix to store the derivatives.
+ * @param m The matrix of input values (assumed to be the output of the softmax function).
+ */
+void Functions::softmax_derivative(Matrix& m_derivatives, Matrix& m) {
+    if (m_derivatives.rows != m.rows || m_derivatives.columns != m.rows) {
+        throw std::runtime_error("Matrix dimensions must match for softmax derivative calculation.");
+    }
+
+    for (int r = 0; r < m_derivatives.rows; r++) {
+        for (int c = 0; c < m_derivatives.columns; c++) {
+            if (r == c){
+                m_derivatives.matrix_vals[r * m_derivatives.columns + c] = m.matrix_vals[r] * (1.0f - m.matrix_vals[r]); // Diagonal elements.
+            } 
+            else {
+                m_derivatives.matrix_vals[r * m_derivatives.columns + c] = -m.matrix_vals[r] * m.matrix_vals[c]; // Off-diagonal elements.
+            }
+        }
+    }
+}   

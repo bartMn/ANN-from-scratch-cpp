@@ -358,3 +358,46 @@ void Matrix::elementWiseMultiply(const Matrix& a, const Matrix& b) {
         this->matrix_vals[i] = a.matrix_vals[i] * b.matrix_vals[i];
     }
 }
+
+/**
+ * @brief Sets the values of this matrix from another matrix.
+ * @param m The matrix to copy values from.
+ */
+void Matrix::setValsFormMatrix(const Matrix& m) {
+    if (this->rows != m.rows || this->columns != m.columns) {
+        throw std::runtime_error("Matrix dimensions must match for assignment.");
+    }
+
+    #pragma omp parallel for
+    for (int i = 0; i < m.rows * m.columns; i++) {
+        this->matrix_vals[i] = m.matrix_vals[i];
+    }
+}
+
+/**
+ * @brief Initializes the matrix with random values.
+ */
+void Matrix::randomInit() {
+    for (int i = 0; i < this->rows * this->columns; i++) {
+        this->matrix_vals[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+    }
+}
+
+
+Matrix transpose(const Matrix& m) {
+    Matrix result(m.columns, m.rows);
+    #pragma omp parallel for
+    for (int r = 0; r < m.rows; r++) {
+        for (int c = 0; c < m.columns; c++) {
+            result.matrix_vals[c * m.rows + r] = m.matrix_vals[r * m.columns + c];
+        }
+    }
+    return result;
+}
+
+void Matrix::resetWithVal(float val) {
+    #pragma omp paraller for
+    for (int i = 0; i < rows * columns; i++) {
+        matrix_vals[i] = val;
+    }
+}

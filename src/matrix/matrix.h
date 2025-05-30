@@ -16,7 +16,8 @@ class Matrix {
         int get_columns_num(); ///< Gets the number of columns in the matrix.
         void printMatrix(); ///< Prints the matrix to the console.
         float get_val(int row, int col); ///< Gets the value at a specific position in the matrix.
-
+        void randomInit(); ///< Initializes the matrix with random values.
+        void resetWithVal(float val);
         // Operator overloads for matrix operations
         Matrix& operator+=(const Matrix& other); ///< Adds another matrix to this matrix.
         Matrix& operator-=(const Matrix& other); ///< Subtracts another matrix from this matrix.
@@ -25,6 +26,8 @@ class Matrix {
 
         void matrixMultiply(const Matrix& a, const Matrix& b); ///< Performs matrix multiplication and stores the result in the current matrix.
         void elementWiseMultiply(const Matrix& a, const Matrix& b); ///< Performs element-wise multiplication and stores the result in the current matrix.
+
+        void setValsFormMatrix(const Matrix& m); ///< Sets the values of this matrix from another matrix.
 
         // Friend functions for operator overloads
         friend Matrix operator+(const Matrix& a, const Matrix& b); ///< Adds two matrices.
@@ -39,6 +42,7 @@ class Matrix {
         friend Matrix operator-(const Matrix& m, double scalar); ///< Subtracts a scalar from a matrix.
         friend Matrix operator-(double scalar, const Matrix& m); ///< Subtracts a matrix from a scalar.
 
+        friend Matrix transpose(const Matrix& m);
         friend class Functions; ///< Allows the Functions class to access private members of Matrix.
 
     private:
