@@ -119,11 +119,10 @@ float Functions::Cross_Entropy(Matrix& predictions, Matrix& y) {
 
     float cross_entropy = 0.0f;
     for (int i = 0; i < predictions.rows * predictions.columns; i++) {
-        if (y.matrix_vals[i] > 0) { // Avoid log(0) for non-target classes
+        if (y.matrix_vals[i] > 0) { 
             cross_entropy -= y.matrix_vals[i] * std::log(predictions.matrix_vals[i] + 1e-9f); // Add small epsilon to avoid log(0)
         }
     }
-    cross_entropy /= predictions.rows*predictions.columns; // Average over the number of samples
     return cross_entropy;
 }
 
