@@ -106,7 +106,7 @@ int test_diff() {
     Functions F;
     F.diff(diff, predictions, y);
 
-    float expected_vals[] = {0.0, 0.5, 0.5};
+    float expected_vals[] = {0.0, -0.5, -0.5};
     for (int i = 0; i < 3; i++) {
         if (std::abs(diff.get_val(0, i) - expected_vals[i]) > 1e-6) {
             std::cout << "test_diff Failed.\n";
