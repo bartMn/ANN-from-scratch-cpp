@@ -14,6 +14,8 @@ This project implements a neural network library from scratch in C++ with suppor
 - Modular design: separate folders for matrix, functions, and ANN logic
 - Unit tests for all core components (matrix, functions, ANN)
 - Support for setting optimizer (currently only SGD) and loss function via [`ANN::set_optimizer`](src/ann/ann.cpp)
+- training support via [`ANN::train_epoch`](src/ann/ann.cpp) and [`ANN::train_model`](src/ann/ann.cpp)
+- Evaluation on validation/test sets via [`ANN::run_evaluation`](src/ann/ann.cpp)
 - Example training loop and loss calculation in [`tests/ann/ann_test.cpp`](tests/ann/ann_test.cpp)
 - Multithreading support for performance optimization
 
@@ -36,7 +38,7 @@ ANN_from_scratch/
 ## Getting Started
 
 ### Prerequisites
-- A C++ compiler (e.g., `g++`) with support for C++11 or later
+- A C++ compiler (e.g., `g++`) with support for C++17 or later
 - `make` for building the project
 - Linux or any Unix-based operating system (tested on Linux)
 
@@ -65,15 +67,14 @@ ANN_from_scratch/
 
 ## Current Limitations
 
-- **Training and Backpropagation:** The training and backpropagation logic has only been tested with a single sample. There is no support yet for mini-batch or full-batch training.
 - **Cross-Entropy Loss:** When using cross-entropy loss, it is assumed that the output layer uses either softmax or sigmoid activation. No checks are enforced for this.
-- **Regression and Classification:** Only basic regression with one sample has been tested. Classification and regression with larger datasets (more than one sample) are not yet tested.
+- **Regression and Classification:** Only basic regression with small dataset has been tested. Classification has not been tested yet. More extensive testing is needed.
 - **Optimizers:** Only Stochastic Gradient Descent (SGD) is implemented. Other optimizers (e.g., Adam) are not supported.
 - **Error Handling:** Some error messages may be basic or missing for certain edge cases.
 
 ## Planned Improvements
 
-- Add support and tests for regression with larger datasets (batch/multi-sample training).
+- Add more complex regression tests.
 - Add classification tests and examples.
 - Implement and test additional optimizers (e.g., Adam).
 - Improve error handling and input validation.
