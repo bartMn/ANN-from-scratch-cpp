@@ -91,6 +91,55 @@ int test_set_optimizer_invalid() {
     }
 }
 
+void generate_smaples(int num_of_samples, std::vector<std::array<Matrix, 2>>& samples) {
+    std::random_device rd;  // non-deterministic seed source
+    std::mt19937 sample_gen(rd()); // Mersenne Twister engine seeded with rd()
+    // Define a distribution in the range [0.0, 1.0)
+    std::uniform_real_distribution<float> sample_dist(-100.0f, 100.0f);
+
+    for (int i = 0; i < num_of_samples; i++) {
+        float x1 = sample_dist(sample_gen);
+        float x2 = sample_dist(sample_gen);
+        float x3 = sample_dist(sample_gen);
+        
+        float input_vals[3][1] = {{x1}, {x2}, {x3}};
+        float y1 = x1 + x2 - x3;
+        float y2 = x1 * x2 * x3;
+        float y3 = std::sin(x1) + x2 + std::cos(x3);
+        float y4 = x1 + std::pow(x2, 3) + std::pow(x3, 2);
+        float target_vals[4][1] = {{y1}, {y2}, {y3}, {y4}};
+        //float target_vals[1][1] = {{y1}};
+        
+        Matrix input_matrix(3, 1, *input_vals);
+        Matrix target_matrix(4, 1, *target_vals);
+        //Matrix target_matrix(1, 1, *target_vals);
+        std::array<Matrix, 2> innerList = {input_matrix, target_matrix};
+        samples.push_back(innerList);
+    }
+
+}
+
+void normalize_set(Matrix& input_min, Matrix& input_max, 
+                   Matrix& target_min, Matrix& target_max, 
+                   std::vector<std::array<Matrix, 2>>& samples) {
+                    
+    for (auto& [input, target] : samples) {
+        for (int i = 0; i < input.get_rows_num(); i++) {
+            for (int j = 0; j < input.get_columns_num(); j++) {
+                input.set_val(i, j, (input.get_val(i, j) - input_min.get_val(i, j)) / 
+                                   (input_max.get_val(i, j) - input_min.get_val(i, j)));
+            }
+        }
+        for (int i = 0; i < target.get_rows_num(); i++) {
+            for (int j = 0; j < target.get_columns_num(); j++) { 
+                target.set_val(i, j, (target.get_val(i, j) - target_min.get_val(i, j)) / 
+                                   (target_max.get_val(i, j) - target_min.get_val(i, j)));
+            }
+        }
+    }
+
+}
+
 int run_ann_tests() {
     int status = 0;
 
