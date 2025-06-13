@@ -23,7 +23,8 @@ public:
     void update_weights(); // Update weights using gradients
     float calcualte_loss(Matrix& target); // Calculate loss
     void reset_gradients(); // Reset gradients for backpropagation
-
+    float get_output_val(int row, int col);
+    
 private:
     Functions F; // Functions object for activations/losses
     float learning_rate; // Learning rate for weight updates

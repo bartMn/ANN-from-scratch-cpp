@@ -1,7 +1,7 @@
 #include "ann.h"
 #include <iostream>
 #include <cstring>
-
+#include <cmath>
 /**
  * @brief Constructs an ANN with the given layer sizes and activation functions.
  * Initializes weights, biases, and function maps.
@@ -47,18 +47,24 @@ ANN::ANN(std::vector<int> layer_sizes, std::vector<std::string> activations){
 
     // Random initialization of weights
     for (auto & w : weights) {
-        w.randomInit();
+        //w.randomInit();
+        w.randomHeUniformInit();
     }
 
     // Random initialization of biases
     for (auto & b : biases) {
-        b.randomInit();
+        //b.randomInit();
+        //b.randomHeInit();
+        float bias_scale = std::sqrt(2.0f / b.get_rows_num());  // Match He-normal std dev
+        float bias = 0.01f * bias_scale;
+        b.resetWithVal(bias); // Initialize biases to 0.0001f
     }
 
     this->learning_rate = 0.01f; // Default learning rate
     this->loss_function = new char[4]; // Allocate memory for "MSE"
     strcpy(this->loss_function, "MSE");
     
+    /*
     std::cout << "ANN initialized with " << layer_sizes.size() << " layers.\n";
     std::cout << weights[0].get_rows_num() << "\n";
     std::cout << "weights.size() = " << weights.size() << "\n";
@@ -66,6 +72,7 @@ ANN::ANN(std::vector<int> layer_sizes, std::vector<std::string> activations){
     std::cout << "z_values.size() = " << z_values.size() << "\n";
     std::cout << "a_values.size() = " << a_values.size() << "\n";
     std::cout << "activation_functions.size() = " << activation_functions.size() << "\n";
+    */
 }
 
 
@@ -81,7 +88,7 @@ void ANN::forward(Matrix& input) {
         a_values[i+1].setValsFormMatrix(z_values[i]); // Copy z_values to a_values
         activation_functions[i]( a_values[i+1] ); // Apply the activation function
     }
-    a_values.back().printMatrix();
+    //a_values.back().printMatrix();
 }
 
 
@@ -179,8 +186,12 @@ float ANN::calcualte_loss(Matrix& target) {
         F.diff(error_signals.back(), a_values.back(), target);
         loss = F.Cross_Entropy(a_values.back(), target);
     }
-    std::cout << "Loss: " << loss << "\n";
+    //std::cout << "Loss: " << loss << "\n";
     return loss;
+}
+
+float ANN::get_output_val(int row, int col){
+    return a_values.back().get_val(row, col);
 }
 
 /**
