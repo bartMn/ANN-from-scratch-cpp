@@ -23,6 +23,12 @@ public:
     void update_weights(); // Update weights using gradients
     float calcualte_loss(Matrix& target); // Calculate loss
     void reset_gradients(); // Reset gradients for backpropagation
+    void average_gradients(int batch_size);
+    void clip_gradients(float max_norm); // Clip gradients to prevent exploding gradients
+    float get_output_val(int row, int col);
+    float train_epoch(std::vector<std::array<Matrix, 2>>& train_set, int batch_size);
+    float run_evaluation(std::vector<std::array<Matrix, 2>>& eval_set);
+    void train_model(std::vector<std::array<Matrix, 2>>& train_set, std::vector<std::array<Matrix, 2>>& eval_set, int epochs, long unsigned batch_size);
 
 private:
     Functions F; // Functions object for activations/losses

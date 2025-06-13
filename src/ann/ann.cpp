@@ -1,7 +1,7 @@
 #include "ann.h"
 #include <iostream>
 #include <cstring>
-
+#include <cmath>
 /**
  * @brief Constructs an ANN with the given layer sizes and activation functions.
  * Initializes weights, biases, and function maps.
@@ -47,18 +47,24 @@ ANN::ANN(std::vector<int> layer_sizes, std::vector<std::string> activations){
 
     // Random initialization of weights
     for (auto & w : weights) {
-        w.randomInit();
+        //w.randomInit();
+        w.randomHeUniformInit();
     }
 
     // Random initialization of biases
     for (auto & b : biases) {
-        b.randomInit();
+        //b.randomInit();
+        //b.randomHeInit();
+        float bias_scale = std::sqrt(2.0f / b.get_rows_num());  // Match He-normal std dev
+        float bias = 0.01f * bias_scale;
+        b.resetWithVal(bias); // Initialize biases to 0.0001f
     }
 
     this->learning_rate = 0.01f; // Default learning rate
     this->loss_function = new char[4]; // Allocate memory for "MSE"
     strcpy(this->loss_function, "MSE");
     
+    /*
     std::cout << "ANN initialized with " << layer_sizes.size() << " layers.\n";
     std::cout << weights[0].get_rows_num() << "\n";
     std::cout << "weights.size() = " << weights.size() << "\n";
@@ -66,6 +72,7 @@ ANN::ANN(std::vector<int> layer_sizes, std::vector<std::string> activations){
     std::cout << "z_values.size() = " << z_values.size() << "\n";
     std::cout << "a_values.size() = " << a_values.size() << "\n";
     std::cout << "activation_functions.size() = " << activation_functions.size() << "\n";
+    */
 }
 
 
@@ -81,7 +88,7 @@ void ANN::forward(Matrix& input) {
         a_values[i+1].setValsFormMatrix(z_values[i]); // Copy z_values to a_values
         activation_functions[i]( a_values[i+1] ); // Apply the activation function
     }
-    a_values.back().printMatrix();
+    //a_values.back().printMatrix();
 }
 
 
@@ -154,6 +161,39 @@ void ANN::reset_gradients() {
     }
 }
 
+void ANN::average_gradients(int batch_size) {
+    for (size_t i = 0; i < dw_accumulated.size(); i++) {
+        dw_accumulated[i] /= batch_size;
+        db_accumulated[i] /= batch_size;
+    }
+}
+
+void ANN::clip_gradients(float max_norm){
+    
+    for (long unsigned grad_idx =0; grad_idx < dw_accumulated.size(); grad_idx++){
+        float sum = 0.0f;
+        for (int row = 0; row < dw_accumulated[grad_idx].get_rows_num(); row++) {
+            for (int col = 0; col < dw_accumulated[grad_idx].get_columns_num(); col++) {
+                sum += dw_accumulated[grad_idx].get_val(row, col) * dw_accumulated[grad_idx].get_val(row, col);
+            }
+        }
+        for (int row = 0; row < db_accumulated[grad_idx].get_rows_num(); row++) {
+            for (int col = 0; col < db_accumulated[grad_idx].get_columns_num(); col++) {
+                sum += db_accumulated[grad_idx].get_val(row, col) * db_accumulated[grad_idx].get_val(row, col);
+            }
+        }
+
+        float norm = std::sqrt(sum);
+        if (norm > max_norm) {
+            float scale = max_norm / norm;
+            dw_accumulated[grad_idx] *= scale;
+            db_accumulated[grad_idx] *= scale;
+        }
+
+    }
+    
+}
+
 
 /**
  * @brief Calculates the loss and prepares error signals for backpropagation.
@@ -179,8 +219,63 @@ float ANN::calcualte_loss(Matrix& target) {
         F.diff(error_signals.back(), a_values.back(), target);
         loss = F.Cross_Entropy(a_values.back(), target);
     }
-    std::cout << "Loss: " << loss << "\n";
+    //std::cout << "Loss: " << loss << "\n";
     return loss;
+}
+
+float ANN::get_output_val(int row, int col){
+    return a_values.back().get_val(row, col);
+}
+
+float ANN::train_epoch(std::vector<std::array<Matrix, 2>>& train_set, int batch_size){
+    
+    std::cout << "Training with batch size: " << batch_size << "\n";
+    std::cout << "Number of training batches: " << int(train_set.size()/ batch_size) << "\n";
+    
+    float running_loss = 0.0f;
+    int ct = 0;
+    for (int batch_num=0; batch_num < int(train_set.size()/ batch_size); batch_num++){
+        reset_gradients();
+        for (int sample_num=0; sample_num< batch_size; sample_num++){
+            auto& [x, y] = train_set[batch_num * batch_size + sample_num];
+            forward(x);
+            running_loss += calcualte_loss(y);
+            ct++;
+            backprop();
+        }
+        average_gradients(batch_size);
+        clip_gradients(1.0f); // Clip gradients to prevent exploding gradients
+        update_weights();
+    }
+    std::cout << "ct: " << ct << " int(train_set.size()/ batch_size): "<<int(train_set.size()/ batch_size)<<"\n";
+    return running_loss / ct;
+}
+
+
+float ANN::run_evaluation(std::vector<std::array<Matrix, 2>>& eval_set){
+    float running_loss = 0.0f;
+    for (long unsigned sample_idx =0; sample_idx < eval_set.size(); sample_idx++){
+        auto& [x, y] = eval_set[sample_idx];
+        forward(x);
+        running_loss += calcualte_loss(y);
+    }
+
+    return running_loss / eval_set.size();
+}
+
+void ANN::train_model(std::vector<std::array<Matrix, 2>>& train_set, std::vector<std::array<Matrix, 2>>& eval_set, int epochs, long unsigned batch_size) {
+    if (epochs <= 0) {
+        throw std::runtime_error("Number of epochs must be greater than zero.");
+    }
+    if (batch_size <= 0 || batch_size > train_set.size()) {
+        throw std::runtime_error("Invalid batch size.");
+    }
+    
+    for (int epoch = 0; epoch < epochs; epoch++) {
+        float train_loss = train_epoch(train_set, batch_size);
+        float eval_loss = run_evaluation(eval_set);
+        std::cout << "Epoch " << epoch + 1 << ": Train Loss = " << train_loss << ", Eval Loss = " << eval_loss << "\n";
+    }
 }
 
 /**

@@ -1,5 +1,7 @@
 #include "matrix.h"
 #include <iostream>
+#include <cmath>
+#include <random>
 
 /**
  * @brief Constructs a matrix with specified dimensions and initializes values from an array.
@@ -69,6 +71,12 @@ float Matrix::get_val(int row, int col) {
     return this->matrix_vals[row * this->columns + col]; 
 }
 
+void Matrix::set_val(int row, int col, float val) {
+    if (row < 0 || row >= this->rows || col < 0 || col >= this->columns) {
+        throw std::out_of_range("Index out of bounds");
+    }
+    this->matrix_vals[row * this->columns + col] = val;
+}
 /**
  * @brief Adds another matrix to this matrix element-wise.
  * @param other The matrix to add.
@@ -383,6 +391,39 @@ void Matrix::randomInit() {
     }
 }
 
+void Matrix::randomHeNormalInit() {
+    int fan_in = this->rows; // Assuming the number of input features is equal to the number of rows
+    float stddev = std::sqrt(2.0f / fan_in);
+
+    // Create a random number generator
+    static std::random_device rd;
+    static std::mt19937 gen(rd());  // Mersenne Twister engine
+
+    // Create a normal distribution with mean 0 and computed stddev
+    std::normal_distribution<float> dist(0.0f, stddev);
+
+    // Generate and return a sample
+    for (int i = 0; i < this->rows * this->columns; i++) {
+        this->matrix_vals[i] = dist(gen);
+    }
+}
+
+void Matrix::randomHeUniformInit() {
+    int fan_in = this->rows; // Assuming the number of input features is equal to the number of rows
+    float limit = std::sqrt(6.0f / fan_in);
+
+    // Create a random number generator
+    static std::random_device rd;
+    static std::mt19937 gen(rd());  // Mersenne Twister engine
+
+    // Create a normal distribution with mean 0 and computed stddev
+    std::uniform_real_distribution<float> dist(-limit, limit);
+
+    // Generate and return a sample
+    for (int i = 0; i < this->rows * this->columns; i++) {
+        this->matrix_vals[i] = dist(gen);
+    }
+}
 
 Matrix transpose(const Matrix& m) {
     Matrix result(m.columns, m.rows);
@@ -396,7 +437,7 @@ Matrix transpose(const Matrix& m) {
 }
 
 void Matrix::resetWithVal(float val) {
-    #pragma omp paraller for
+    #pragma omp parallel for
     for (int i = 0; i < rows * columns; i++) {
         matrix_vals[i] = val;
     }

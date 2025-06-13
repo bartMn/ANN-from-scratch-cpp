@@ -16,7 +16,11 @@ class Matrix {
         int get_columns_num(); ///< Gets the number of columns in the matrix.
         void printMatrix(); ///< Prints the matrix to the console.
         float get_val(int row, int col); ///< Gets the value at a specific position in the matrix.
+        void set_val(int row, int col, float val); ///< Sets the value at a specific position in the matrix.
         void randomInit(); ///< Initializes the matrix with random values.
+        void randomHeNormalInit(); ///< Initializes the matrix with random values.
+        void randomHeUniformInit(); ///< Initializes the matrix with random values.
+        
         void resetWithVal(float val);
         // Operator overloads for matrix operations
         Matrix& operator+=(const Matrix& other); ///< Adds another matrix to this matrix.
