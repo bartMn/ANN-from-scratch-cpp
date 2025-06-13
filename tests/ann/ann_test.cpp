@@ -2,6 +2,8 @@
 #include "../src/functions/functions.h"
 #include "../src/ann/ann.h"
 #include <iostream>
+#include <cmath>
+#include <random>
 
 int test_forward() {
     ANN ann({2, 500, 500, 1}, {"ReLu","ReLu", "ReLu"});
@@ -41,16 +43,25 @@ int test_one_sample_training() {
     float v[2][1] = {{1.0}, {2.0}}; 
     Matrix input(2, 1, *v);
     Matrix target(2, 1, *v);
-    
-    for (int ct = 0; ct < 40; ct++) {
-        std::cout << "Training iteration: " << ct << "\n";
+    ann.set_optimizer("SGD", "MSE", 0.1f);
+    for (int ct = 0; ct < 100; ct++) {
+        //std::cout << "Training iteration: " << ct << "\n";
         ann.forward(input);
         ann.reset_gradients(); // Reset gradients before each training step
         ann.calcualte_loss(target);
         ann.backprop();
         ann.update_weights(); // Update weights after backpropagation
     }
-
+    
+    for (int r = 0; r < 2; r++) {
+        for (int c = 0; c < 1; c++) {
+            if (std::abs(target.get_val(r, c) - ann.get_output_val(r, c) > 1e-4)) {               
+            std::cout << "test_one_sample_training FAILED at row " << r << " col "<<  c<< "\n";
+            std::cout << "Expected: " << target.get_val(r, c) << ", Got: " << ann.get_output_val(r, c) << "\n";
+            return -1;
+            }
+        }
+    }
     std::cout << "test_one_sample_training passed.\n";
     return 0;
 }
@@ -80,9 +91,6 @@ int test_set_optimizer_invalid() {
     }
 }
 
-
-
-
 int run_ann_tests() {
     int status = 0;
 
@@ -99,7 +107,6 @@ int run_ann_tests() {
     if (test_set_optimizer_valid() != 0) status = -1;
     if (test_set_optimizer_invalid() != 0) status = -1;
 
-
     if (status == 0) {
         std::cout << "All ANN tests passed successfully!\n";
     } else {
@@ -112,5 +119,5 @@ int run_ann_tests() {
     std::cout << "###################################################" << std::endl;
     std::cout << std::endl;
 
-    return 0;
+    return status;
 }
