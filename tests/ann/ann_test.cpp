@@ -140,6 +140,79 @@ void normalize_set(Matrix& input_min, Matrix& input_max,
 
 }
 
+int test_training_with_no_noise(){
+    
+    //ANN ann({3, 100, 100, 4}, {"ReLu","ReLu", "ReLu"});
+    ANN ann({3, 64, 128, 64, 4}, {"ReLu", "ReLu", "ReLu", "linear"});
+    ann.set_optimizer("SGD", "MSE", 1e-2f);
+    int epochs = 20;
+    int batch_size = 16;
+    int num_of_training_samples = 16000;
+    int num_of_validation_samples = num_of_training_samples / 10;
+    int num_of_test_samples = num_of_training_samples / 10;
+    int num_of_training_batches = num_of_training_samples / batch_size;
+    int num_of_validation_batches = num_of_validation_samples / batch_size;
+    int num_of_test_batches = num_of_test_samples / batch_size;
+    std::vector<std::array<Matrix, 2>> train_set;
+    std::vector<std::array<Matrix, 2>> val_set;
+    std::vector<std::array<Matrix, 2>> test_set;
+
+    // Generate a random float
+    generate_smaples(batch_size*num_of_training_batches, train_set);
+    generate_smaples(batch_size*num_of_validation_batches, val_set);
+    generate_smaples(batch_size*num_of_test_batches, test_set);
+    
+    auto& [input_sample, target_sample] = train_set[0];
+    int input_rows = input_sample.get_rows_num();
+    int input_columns = input_sample.get_columns_num();
+    int target_rows = target_sample.get_rows_num();
+    int target_columns = target_sample.get_columns_num();
+    Matrix input_min(input_rows, input_columns);
+    Matrix input_max(input_rows, input_columns);
+    Matrix target_min(target_rows, target_columns);
+    Matrix target_max(target_rows, target_columns);
+    //Matrix target_min(4, 1);
+    //Matrix target_max(4, 1);
+    input_min.resetWithVal(1e6f); // Initialize to a large value
+    input_max.resetWithVal(-1e6f); // Initialize to a small value
+    target_min.resetWithVal(1e6f); // Initialize to a large value
+    target_max.resetWithVal(-1e6f); // Initialize to a small value
+    
+    for (auto& [input, target] : train_set) {
+        for (int i = 0; i < input.get_rows_num(); i++) {
+            for (int j = 0; j < input.get_columns_num(); j++) {
+                input_min.set_val(i, j, std::min(input_min.get_val(i, j), input.get_val(i, j)));
+                input_max.set_val(i, j, std::max(input_max.get_val(i, j), input.get_val(i, j)));
+            }
+        }
+        for (int i = 0; i < target.get_rows_num(); i++) {
+            for (int j = 0; j < target.get_columns_num(); j++) { 
+                target_min.set_val(i, j, std::min(target_min.get_val(i, j), target.get_val(i, j)));
+                target_max.set_val(i, j, std::max(target_max.get_val(i, j), target.get_val(i, j)));
+            }
+        }
+    }
+
+    normalize_set(input_min, input_max, target_min, target_max, train_set);
+    normalize_set(input_min, input_max, target_min, target_max, val_set);
+    normalize_set(input_min, input_max, target_min, target_max, test_set);
+    //return 0;
+    ann.train_model(train_set, val_set, epochs, batch_size);
+    float test_loss = ann.run_evaluation(test_set);
+    std::cout << "Test loss: " << test_loss << "\n";
+    
+    if (test_loss < 0.01f) {
+        std::cout << "test_training_with_no_noise passed.\n";
+        return 0;
+    } else {
+        std::cout << "test_training_with_no_noise failed.\n";
+        return -1;
+    }
+
+    return 0;
+}
+
+
 int run_ann_tests() {
     int status = 0;
 
@@ -155,6 +228,7 @@ int run_ann_tests() {
     if (test_one_sample_training() != 0) status = -1;
     if (test_set_optimizer_valid() != 0) status = -1;
     if (test_set_optimizer_invalid() != 0) status = -1;
+    if (test_training_with_no_noise() != 0) status = -1;
 
     if (status == 0) {
         std::cout << "All ANN tests passed successfully!\n";
