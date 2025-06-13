@@ -227,6 +227,57 @@ float ANN::get_output_val(int row, int col){
     return a_values.back().get_val(row, col);
 }
 
+float ANN::train_epoch(std::vector<std::array<Matrix, 2>>& train_set, int batch_size){
+    
+    std::cout << "Training with batch size: " << batch_size << "\n";
+    std::cout << "Number of training batches: " << int(train_set.size()/ batch_size) << "\n";
+    
+    float running_loss = 0.0f;
+    int ct = 0;
+    for (int batch_num=0; batch_num < int(train_set.size()/ batch_size); batch_num++){
+        reset_gradients();
+        for (int sample_num=0; sample_num< batch_size; sample_num++){
+            auto& [x, y] = train_set[batch_num * batch_size + sample_num];
+            forward(x);
+            running_loss += calcualte_loss(y);
+            ct++;
+            backprop();
+        }
+        average_gradients(batch_size);
+        clip_gradients(1.0f); // Clip gradients to prevent exploding gradients
+        update_weights();
+    }
+    std::cout << "ct: " << ct << " int(train_set.size()/ batch_size): "<<int(train_set.size()/ batch_size)<<"\n";
+    return running_loss / ct;
+}
+
+
+float ANN::run_evaluation(std::vector<std::array<Matrix, 2>>& eval_set){
+    float running_loss = 0.0f;
+    for (long unsigned sample_idx =0; sample_idx < eval_set.size(); sample_idx++){
+        auto& [x, y] = eval_set[sample_idx];
+        forward(x);
+        running_loss += calcualte_loss(y);
+    }
+
+    return running_loss / eval_set.size();
+}
+
+void ANN::train_model(std::vector<std::array<Matrix, 2>>& train_set, std::vector<std::array<Matrix, 2>>& eval_set, int epochs, long unsigned batch_size) {
+    if (epochs <= 0) {
+        throw std::runtime_error("Number of epochs must be greater than zero.");
+    }
+    if (batch_size <= 0 || batch_size > train_set.size()) {
+        throw std::runtime_error("Invalid batch size.");
+    }
+    
+    for (int epoch = 0; epoch < epochs; epoch++) {
+        float train_loss = train_epoch(train_set, batch_size);
+        float eval_loss = run_evaluation(eval_set);
+        std::cout << "Epoch " << epoch + 1 << ": Train Loss = " << train_loss << ", Eval Loss = " << eval_loss << "\n";
+    }
+}
+
 /**
  * @brief Destructor for ANN. Frees allocated memory.
  */
