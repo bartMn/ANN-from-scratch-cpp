@@ -495,13 +495,13 @@ int test_elementWiseMultiply() {
 
     result.elementWiseMultiply(m1, m2);
     float expected[] = {1*5, 2*6, 3*7, 4*8};  // [[1*5, 2*6], [3*7, 4*8]]
-        for (int r = 0; r< result.get_rows_num() ; r++)
-            for (int c = 0; c < result.get_columns_num() ; c++) {
-                if (result.get_val(r, c) != expected[r*result.get_rows_num() + c]){
-                    std::cout << "\nElement-wise multiplication FAILED\n";
-                    return -1;
-                }
+    for (int r = 0; r< result.get_rows_num() ; r++)
+        for (int c = 0; c < result.get_columns_num() ; c++) {
+            if (result.get_val(r, c) != expected[r*result.get_rows_num() + c]){
+                std::cout << "\nElement-wise multiplication FAILED\n";
+                return -1;
             }
+        }
 
     std::cout << "test_elementWiseMultiply passed.\n";
     return 0;
