@@ -161,6 +161,39 @@ void ANN::reset_gradients() {
     }
 }
 
+void ANN::average_gradients(int batch_size) {
+    for (size_t i = 0; i < dw_accumulated.size(); i++) {
+        dw_accumulated[i] /= batch_size;
+        db_accumulated[i] /= batch_size;
+    }
+}
+
+void ANN::clip_gradients(float max_norm){
+    
+    for (long unsigned grad_idx =0; grad_idx < dw_accumulated.size(); grad_idx++){
+        float sum = 0.0f;
+        for (int row = 0; row < dw_accumulated[grad_idx].get_rows_num(); row++) {
+            for (int col = 0; col < dw_accumulated[grad_idx].get_columns_num(); col++) {
+                sum += dw_accumulated[grad_idx].get_val(row, col) * dw_accumulated[grad_idx].get_val(row, col);
+            }
+        }
+        for (int row = 0; row < db_accumulated[grad_idx].get_rows_num(); row++) {
+            for (int col = 0; col < db_accumulated[grad_idx].get_columns_num(); col++) {
+                sum += db_accumulated[grad_idx].get_val(row, col) * db_accumulated[grad_idx].get_val(row, col);
+            }
+        }
+
+        float norm = std::sqrt(sum);
+        if (norm > max_norm) {
+            float scale = max_norm / norm;
+            dw_accumulated[grad_idx] *= scale;
+            db_accumulated[grad_idx] *= scale;
+        }
+
+    }
+    
+}
+
 
 /**
  * @brief Calculates the loss and prepares error signals for backpropagation.

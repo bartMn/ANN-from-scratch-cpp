@@ -23,6 +23,8 @@ public:
     void update_weights(); // Update weights using gradients
     float calcualte_loss(Matrix& target); // Calculate loss
     void reset_gradients(); // Reset gradients for backpropagation
+    void average_gradients(int batch_size);
+    void clip_gradients(float max_norm); // Clip gradients to prevent exploding gradients
     float get_output_val(int row, int col);
     
 private:
